@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "socket.h": "c",
+        "types.h": "c",
+        "netdb.h": "c",
+        "inet.h": "c",
+        "in.h": "c"
+    },
+    "cmake.configureOnOpen": false
+}
