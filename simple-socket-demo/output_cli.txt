@@ -3,42 +3,43 @@ Get sockfd
 Connected to server
 Welcome to simple demo server.
 Thread create succeeded
-Send: 388
-Recv 4 bytes of number: 749 Time now: 1004
-Send: 11
-Recv 4 bytes of number: 255 Time now: 1004
-Send: 347
-Recv 4 bytes of number: 702 Time now: 1005
-Send: 320
-Recv 4 bytes of number: 813 Time now: 1005
-Send: 109
-Recv 4 bytes of number: 582 Time now: 1006
-Send: 101
-Recv 4 bytes of number: 341 Time now: 1007
-Send: 357
-Recv 4 bytes of number: 551 Time now: 1007
-Send: 488
-Recv 4 bytes of number: 928 Time now: 1007
-Send: 468
-Recv 4 bytes of number: 929 Time now: 1008
-Send: 74
-Recv 4 bytes of number: 249 Time now: 1008
-Send: 301
-Recv 4 bytes of number: 489 Time now: 1009
-Send: 489
-Recv 4 bytes of number: 566 Time now: 1010
-Send: 2
-Send: 352
-Recv 4 bytes of number: 385 Time now: 2005
+Send: 90
+Recv 4 bytes of number: 371 Time now: 506
+Send: 106
+Recv 4 bytes of number: 580 Time now: 506
+Send: 372
+Recv 4 bytes of number: 479 Time now: 507
 Send: 411
-Recv 4 bytes of number: 547 Time now: 2005
-Send: 380
-Recv 4 bytes of number: 384 Time now: 2006
-Send: 238
-Recv 4 bytes of number: 444 Time now: 2006
-Send: 304
-Recv 4 bytes of number: 547 Time now: 2007
-Send: 147
-Recv 4 bytes of number: 546 Time now: 2007
-Send: 142
+Recv 4 bytes of number: 752 Time now: 507
+Send: 392
+Recv 4 bytes of number: 805 Time now: 507
+Send: 317
+Recv 4 bytes of number: 474 Time now: 507
+Send: 303
+Recv 4 bytes of number: 495 Time now: 508
+Send: 37
+Recv 4 bytes of number: 103 Time now: 508
+Send: 461
+Recv 4 bytes of number: 505 Time now: 508
+Send: 264
+Recv 4 bytes of number: 466 Time now: 509
+Send: 411
+Recv 4 bytes of number: 534 Time now: 509
+Send: 319
+Recv 4 bytes of number: 407 Time now: 509
+Send: 165
+Recv 4 bytes of number: 578 Time now: 510
+Send: 472
+Recv 4 bytes of number: 858 Time now: 510
+Send: 10
+Recv 4 bytes of number: 172 Time now: 510
+Send: 57
+Recv 4 bytes of number: 168 Time now: 511
+Send: 422
+Recv 4 bytes of number: 464 Time now: 511
+Send: 100
+Recv 4 bytes of number: 579 Time now: 511
+Send: 177
+Recv 4 bytes of number: 554 Time now: 512
+Send: 413
 Send: -1

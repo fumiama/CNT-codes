@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/timeb.h>
+#include <sys/select.h>
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <unistd.h>
@@ -22,6 +23,13 @@ long long getSysTime() {
     struct timeb t;
     ftime(&t);
     return 1000 * t.time + t.millitm;
+}
+
+void sleep_ms(int milliseconds) {
+    struct timeval sTime;
+    sTime.tv_sec = 0;
+    sTime.tv_usec = milliseconds*1000;
+    select(0, NULL, NULL, NULL, &sTime);
 }
 
 void sendNumber() {
@@ -72,7 +80,7 @@ int main(int argc,char *argv[]) {   //usage: ./client host port
         puts("Thread create succeeded");
         int c = 20;
         while(c-- && send_cnt < 20) {
-            sleep(1);
+            sleep_ms(500);
             if(send_cnt < 20) sendNumber();
         }
         sendTerminate();
