@@ -1,6 +1,9 @@
+#pragma once
 // readfile.cpp : Defines the entry point for the console application.
 //
 //#include "pch.h"
+#ifndef _CFGFILEPARAM_H_
+#define _CFGFILEPARAM_H_
 #include <string>
 #include <vector>
 #include <fstream>
@@ -109,3 +112,4 @@ public:
 	string getLayer();
 	string getEntity();
 };
+#endif // !_CFGFILEPARAM_H_

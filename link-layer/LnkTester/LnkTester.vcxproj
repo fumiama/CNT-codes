@@ -149,7 +149,7 @@
   <ItemGroup>
     <ClCompile Include="CfgFileParms.cpp" />
     <ClCompile Include="function.cpp" />
-    <ClCompile Include="lnklib.c" />
+    <ClCompile Include="lnklib.cpp" />
     <ClCompile Include="LnkTester.cpp" />
   </ItemGroup>
   <ItemGroup>

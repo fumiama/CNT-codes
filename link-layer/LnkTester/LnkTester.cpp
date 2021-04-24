@@ -1,31 +1,19 @@
 ﻿//LnkTester.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
-
 #include <iostream>
 #include <conio.h>
-#include "winsock.h"
-#include "stdio.h"
+#include <winsock.h>
+#include <cstdio>
 #include "CfgFileParms.h"
 #include "function.h"
 #pragma comment (lib,"wsock32.lib")
 
-
-//============重点来了================================================================================================
-//------------重要的控制参数------------------------------------------------------------
-//以下从配置文件ne.txt中读取的重要参数
-int lowerMode[10]; //如果低层是物理层模拟软件，这个数组放置的是每个接口对应的数据格式——0为比特数组，1为字节数组
-int lowerNumber;   //低层实体数量，比如网络层之下可能有多个链路层
-int iWorkMode = 0; //本层实体工作模式
-string strDevID;    //设备号，字符串形式，从1开始
-string strLayer;    //层次名
-string strEntity;   //实体好，字符串形式，从0开始，可以通过atoi函数变成整数在程序中使用
-
 //以下是一些重要的与通信有关的控制参数，但是也可以不用管
 SOCKET sock;
-struct sockaddr_in local_addr;      //本层实体地址
-struct sockaddr_in upper_addr;      //上层实体地址，一般情况下，上层实体只有1个
-struct sockaddr_in lower_addr[10];  //最多10个下层对象，数组下标就是下层实体的编号
-sockaddr_in cmd_addr;         //统一管理平台地址
+struct sockaddr_in local_addr;				//本层实体地址
+struct sockaddr_in upper_addr;			//上层实体地址，一般情况下，上层实体只有1个
+struct sockaddr_in lower_addr[10];		//最多10个下层对象，数组下标就是下层实体的编号
+sockaddr_in cmd_addr;						//统一管理平台地址
 
 //------------华丽的分割线，以下是定时器--------------------------------------------
 //基于select的定时器，目的是把数据的收发和定时都统一到一个事件驱动框架下
@@ -44,8 +32,7 @@ struct threadTimer_t {
 //功能：把全局计时器改为1次性，本函调用的同时计时也开始，当定时到达时TimeOut函数将被调用
 //输入：计时间隔时间，单位微秒，计时的起始就是本函数调用时。
 //输出：直接改变全局计时器变量 sBasicTimer的内容
-void StartTimerOnce(ULONG ulInterval)
-{
+void StartTimerOnce(unsigned long ulInterval) {
 	LARGE_INTEGER llFreq;
 
 	sBasicTimer.iType = 1;
@@ -61,8 +48,7 @@ void StartTimerOnce(ULONG ulInterval)
 //      例程默认是启动周期性计时器机制
 //输入：计时间隔时间，单位微秒，计时的起始就是本函数调用时。
 //输出：直接改变全局计时器变量 sBasicTimer内容
-void StartTimerPeriodically(ULONG ulInterval)
-{
+void StartTimerPeriodically(unsigned long ulInterval) {
 	LARGE_INTEGER llFreq;
 
 	sBasicTimer.iType = 0;
@@ -76,10 +62,9 @@ void StartTimerPeriodically(ULONG ulInterval)
 //功能：向高层实体递交数据时，使用这个函数
 //输入：U8 * buf,准备递交的数据， int len，数据长度，单位字节，int ifNo
 //输出：函数返回值是发送的数据量
-int SendtoUpper(U8* buf, int len)
-{
+int SendtoUpper(U8* buf, int len) {
 	int sendlen;
-	sendlen = sendto(sock, buf, len, 0, (sockaddr*) & (upper_addr), sizeof(sockaddr_in));
+	sendlen = sendto(sock, (char*)buf, len, 0, (sockaddr*) & (upper_addr), sizeof(sockaddr_in));
 	return sendlen;
 }
 //***************重要函数提醒******************************
@@ -87,12 +72,10 @@ int SendtoUpper(U8* buf, int len)
 //功能：向低层实体下发数据时，使用这个函数
 //输入：U8 * buf,准备下发的数据， int len，数据长度，单位字节,int ifNo,发往的低层接口号
 //输出：函数返回值是发送的数据量
-int SendtoLower(U8* buf, int len,int ifNo)
-{
+int SendtoLower(U8* buf, int len,int ifNo) {
 	int sendlen;
-	if (ifNo < 0 || ifNo >= lowerNumber)
-		return 0;
-	sendlen = sendto(sock, buf, len, 0, (sockaddr*) & (lower_addr[ifNo]), sizeof(sockaddr_in));
+	if (ifNo < 0 || ifNo >= lowerNumber) return 0;
+	sendlen = sendto(sock, (char*)buf, len, 0, (sockaddr*) & (lower_addr[ifNo]), sizeof(sockaddr_in));
 	return sendlen;
 }
 //***************重要函数提醒******************************
@@ -100,159 +83,20 @@ int SendtoLower(U8* buf, int len,int ifNo)
 //功能：向统一管理平台发送状态数据时，使用这个函数
 //输入：U8 * buf,准备下发的数据， int len，数据长度，单位字节
 //输出：函数返回值是发送的数据量
-int SendtoCommander(U8* buf, int len)
-{
+int SendtoCommander(U8* buf, int len) {
 	int sendlen;
-	sendlen = sendto(sock, buf, len, 0, (sockaddr*)&(cmd_addr), sizeof(sockaddr_in));
+	sendlen = sendto(sock, (char*)buf, len, 0, (sockaddr*)&(cmd_addr), sizeof(sockaddr_in));
 	return sendlen;
 }
 
-//------------华丽的分割线，以下是一些数据处理的工具函数，可以用，没必要改------------------------------
-//*************************************************
-//名称：ByteArrayToBitArray
-//功能：将字节数组流放大为比特数组流
-//输入： int iBitLen——位流长度, U8* byteA——被放大字节数组, int iByteLen——字节数组长度
-//输出：函数返回值是转出来有多少位；
-//      U8* bitA,比特数组，注意比特数组的空间（声明）大小至少应是字节数组的8倍
-int ByteArrayToBitArray(U8* bitA, int iBitLen, U8* byteA, int iByteLen)
-{
-	int i;
-	int len;
-
-	len = min(iByteLen, iBitLen / 8);
-	for (i = 0; i < len; i++) {
-		//每次编码8位
-		code(byteA[i], &(bitA[i * 8]), 8);
-	}
-	return len * 8;
-}
-//*************************************************
-//名称：BitArrayToByteArray
-//功能：将字节数组流放大为比特数组流
-//输入：U8* bitA,比特数组，int iBitLen——位流长度,  int iByteLen——字节数组长度
-//      注意比特数组的空间（声明）大小至少应是字节数组的8倍
-//输出：返回值是转出来有多少个字节，如果位流长度不是8位整数倍，则最后1字节不满；
-//      U8* byteA——缩小后的字节数组,，
-int BitArrayToByteArray(U8* bitA, int iBitLen, U8* byteA, int iByteLen)
-{
-	int i;
-	int len;
-	int retLen;
-
-	len = min(iByteLen * 8, iBitLen);
-	if (iBitLen > iByteLen * 8) {
-		//截断转换
-		retLen = iByteLen;
-	}
-	else {
-		if (iBitLen % 8 != 0)
-			retLen = iBitLen / 8 + 1;
-		else
-			retLen = iBitLen / 8;
-	}
-
-	for (i = 0; i < len; i += 8) {
-		byteA[i / 8] = (U8)decode(bitA + i, 8);
-	}
-	return retLen;
-}
-//*************************************************
-//名称：print_data_bit
-//功能：按比特流形式打印数据缓冲区内容
-//输入：U8* A——比特数组, int length——位数, int iMode——原始数据格式，0为比特流数组，1为字节数组
-//输出：直接屏幕打印
-void print_data_bit(U8* A, int length, int iMode)
-{
-	int i, j;
-	U8 B[8];
-	int lineCount = 0;
-	cout << endl << "数据的位流：" << endl;
-	if (iMode == 0) {
-		for (i = 0; i < length; i++) {
-			lineCount++;
-			if (A[i] == 0) {
-				printf("0 ");
-			}
-			else {
-				printf("1 ");
-			}
-			if (lineCount % 8 == 0) {
-				printf(" ");
-			}
-			if (lineCount >= 40) {
-				printf("\n");
-				lineCount = 0;
-			}
-		}
-	}
-	else {
-		for (i = 0; i < length; i++) {
-			lineCount++;
-			code(A[i], B, 8);
-			for (j = 0; j < 8; j++) {
-				if (B[j] == 0) {
-					printf("0 ");
-				}
-				else {
-					printf("1 ");
-				}
-				lineCount++;
-			}
-			printf(" ");
-			if (lineCount >= 40) {
-				printf("\n");
-				lineCount = 0;
-			}
-		}
-	}
-	printf("\n");
-}
-//*************************************************
-//名称：print_data_byte
-//功能：按字节流数组形式打印数据缓冲区内容,同时打印字符和十六进制数两种格式
-//输入：U8* A——比特数组, int length——位数, int iMode——原始数据格式，0为比特流数组，1为字节数组
-//输出：直接屏幕打印
-void print_data_byte(U8* A, int length, int iMode)
-{
-	int linecount = 0;
-	int i;
-
-	if (iMode == 0) {
-		length = BitArrayToByteArray(A, length, A, length);
-	}
-	cout << endl << "数据的字符流及十六进制字节流:" << endl;
-	for (i = 0; i < length; i++) {
-		linecount++;
-		printf("%c ", A[i]);
-		if (linecount >= 40) {
-			printf("\n");
-			linecount = 0;
-		}
-	}
-	printf("\n");
-	linecount = 0;
-	for (i = 0; i < length; i++) {
-		linecount++;
-		printf("%02x ", (unsigned char)A[i]);
-		if (linecount >= 40) {
-			printf("\n");
-			linecount = 0;
-		}
-	}
-	printf("\n");
-}
-//end=========重要的就这些，真正需要动手改的“只有”TimeOut，RecvFromUpper，RecvFromLower=========================
-
 //------------华丽的分割线，以下到main以前，都不用管了----------------------------
-void initTimer(int interval)
-{
+void initTimer(int interval) {
 	sBasicTimer.iType = 0;
 	sBasicTimer.ulInterval = interval;//10ms,单位是微秒，10ms相对误差较小，但是也挺耗费CPU
 	QueryPerformanceCounter(&sBasicTimer.llStopTime);
 }
 //根据系统当前时间设置select函数要用的超时时间——to，每次在select前使用
-void setSelectTimeOut(timeval* to, struct threadTimer_t* sT)
-{
+void setSelectTimeOut(timeval* to, struct threadTimer_t* sT) {
 	LARGE_INTEGER llCurrentTime;
 	LARGE_INTEGER llFreq;
 	LONGLONG next;
@@ -273,8 +117,7 @@ void setSelectTimeOut(timeval* to, struct threadTimer_t* sT)
 
 }
 //根据系统当前时间判断定时器sT是否超时，可每次在select后使用，返回值true表示超时，false表示没有超时
-bool isTimeOut(struct threadTimer_t* sT)
-{
+bool isTimeOut(struct threadTimer_t* sT) {
 	LARGE_INTEGER llCurrentTime;
 	LARGE_INTEGER llFreq;
 	//取系统当前时间
@@ -292,51 +135,8 @@ bool isTimeOut(struct threadTimer_t* sT)
 		return false;
 	}
 }
-//名称：code
-//功能：长整数x中的指定位数，放大到A[]这个比特数组中，建议按8的倍数做
-//输入：x，被放大的整数，里面包含length长度的位数
-//输出：A[],放大后的比特数组
-void code(unsigned long x, U8 A[], int length)
-{
-	unsigned long test;
-	int i;
-	//高位在前
-	test = 1;
-	test = test << (length - 1);
-	for (i = 0; i < length; i++) {
-		if (test & x) {
-			A[i] = 1;
-		}
-		else {
-			A[i] = 0;
-		}
-		test = test >> 1; //本算法利用了移位操作和"与"计算，逐位测出x的每一位是0还是1.
-	}
-}
-//名称：decode
-//功能：把比特数组A[]里的各位（元素），缩小放回到一个整数中，长度是length位，建议按8的倍数做
-//输入：比特数组A[],需要变化的位长
-//输出：缩小后，还原的整数
-unsigned long decode(U8 A[], int length)
-{
-	unsigned long x;
-	int i;
 
-	x = 0;
-	for (i = 0; i < length; i++) {
-		if (A[i] == 0) {
-			x = x << 1;;
-		}
-		else {
-			x = x << 1;
-			x = x | 1;
-		}
-	}
-	return x;
-}
-
-void SetColor(int ForgC)
-{
+void SetColor(int ForgC) {
 	WORD wColor;
 	//We will need this handle to get the current background attribute
 	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -351,8 +151,7 @@ void SetColor(int ForgC)
 	}
 }
 //------------华丽的分割线，main来了-----------------
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 	U8 * buf;          //存放从高层、低层、各方面来的数据的缓存，大小为MAX_BUFFER_SIZE
 	int len;           //buf里有效数据的大小，单位是字节
 	int iRecvIntfNo;
@@ -367,7 +166,7 @@ int main(int argc, char* argv[])
 	int i;
 	string strTmp;
 
-	buf = (char*)malloc(MAX_BUFFER_SIZE);
+	buf = (U8*)malloc(MAX_BUFFER_SIZE);
 	if (buf == NULL) {
 		cout << "内存不够" << endl;
 		return 0;
@@ -411,9 +210,9 @@ int main(int argc, char* argv[])
 	}
 
 	cfgParms.print(); //打印出来看看是不是读出来了
-	strDevID = cfgParms.getDeviceID();
-	strLayer = cfgParms.getLayer();
-	strEntity = cfgParms.getEntity();
+	cfgParms.getDeviceID().copy(strDevID, 128);
+	cfgParms.getLayer().copy(strLayer, 128);
+	cfgParms.getEntity().copy(strEntity, 128);
 
 	if (!cfgParms.isConfigExist) {
 		//从键盘输入上、下层本层的地址和端口号等等
@@ -473,7 +272,7 @@ int main(int argc, char* argv[])
 	arg = 1;
 	ioctlsocket(sock, FIONBIO, &arg);
 
-	InitFunction(cfgParms);
+	//InitFunction();
 
 	while (1) {
 		FD_ZERO(&readfds);
@@ -494,7 +293,7 @@ int main(int argc, char* argv[])
 			continue;
 		}
 		len = sizeof(sockaddr_in);
-		retval = recvfrom(sock, buf, MAX_BUFFER_SIZE, 0,(sockaddr*)&remote_addr,&len); //超过这个大小就不能愉快地玩耍了，因为缓冲不够大
+		retval = recvfrom(sock, (char*)buf, MAX_BUFFER_SIZE, 0,(sockaddr*)&remote_addr,&len); //超过这个大小就不能愉快地玩耍了，因为缓冲不够大
 		if (retval == 0) {
 			closesocket(sock);
 			sock = 0;
@@ -526,7 +325,7 @@ int main(int argc, char* argv[])
 			if (iRecvIntfNo >= lowerNumber) {
 				//检查是不是控制口命令
 				if (remote_addr.sin_port == cmd_addr.sin_port) {
-					if (strncmp(buf, "exit", 5) == 0) { 
+					if (strncmp((char*)buf, "exit", 5) == 0) {
 						//收到退出命令
 						goto ret;
 					}
@@ -535,7 +334,7 @@ int main(int argc, char* argv[])
 		}
 	}
 ret:
-	EndFunction();
+	//EndFunction();
 	free(buf);
 	if (sock > 0)
 		closesocket(sock);

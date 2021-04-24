@@ -22,27 +22,14 @@
 #   PHY2 LNK1
 #   PHY3
 1 PHY0 LNK0
-   PHY1
-2 PHY0 LNK0 NET0 APP0
-   PHY1 LNK1
-   PHY2 LNK2 
-3 PHY0 LNK0 NET0 APP0
-   PHY1 LNK1 
-4 PHY0 LNK0 NET0 APP0
-   PHY1 LNK1 
-5 PHY0 LNK0 NET0 APP0 
-6 PHY0 LNK0 NET0 APP0 
+2 PHY0 LNK0
 ---------------------------------------------------------
 #全网拓扑连接描述区域，请注意参数中的标点符号都是英文格式
 #	点到点连接，格式 : A设备号,物理层接口号--B设备号,物理层接口号
 #	共享信道连接，共享同一信道的设备用--符号连续写成一行，格式 :A 设备号,物理层接口号--B设备号,物理层接口号--C设备号,物理层接口号
 #先写哪个设备都行
 #每一行一条链接，中间不留空格
-1,0--5,0--6,0
-1,1--2,2
-2,0--3,0
-3,1--4,0
-4,1--2,1
+1,0--2,0
 ---------------------------------------------------------
 #统一控制平台的工作位置，等号不留空格
 cmdIpAddr=127.0.0.1
@@ -58,43 +45,17 @@ deviceID = 1
 			bufferSize = 40000
 			upperMode = 0
 		-----------------------------
-		entityID = 1
-			errorProb = 20
-			bufferSize = 40000
-			upperMode = 0
-		-----------------------------
 	layer = LNK
 		entityID = 0
 			myAddr = 10
 #			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
 			lowerMode0 = 0
 #			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
-	layer = NET
-		entityID = 0
-			lowerMode0 = 1
-		-----------------------------		
-	layer = APP
-#网元1是交换机，没有设置APP层
-		entityID = 0
-			myAddr = 1
-			workMode = 0
-			autoSendTime = 10
-			autoSendSize = 100
+		-----------------------------	
 ----------------------------------------------------------
 deviceID = 2
 	layer = PHY
 		entityID = 0
-			errorProb = 2000
-			bufferSize = 40000
-			upperMode = 0
-		-----------------------------
-		entityID = 1
-			errorProb = 2000
-			bufferSize = 40000
-			upperMode = 0
-		-----------------------------
-		entityID = 2
 			errorProb = 20
 			bufferSize = 40000
 			upperMode = 0
@@ -103,130 +64,3 @@ deviceID = 2
 		entityID = 0
 			lowerMode0 = 0
 		------------------------------
-		entityID = 1
-			lowerMode0 = 0
-		------------------------------
-		entityID = 2
-			myAddr = 22
-			lowerMode0 = 0
-		------------------------------
-	layer = NET
-		entityID = 0
-			myAddr = 2
-		------------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 2
-			workMode = 0
-			autoSendTime = 10
-			autoSendSize = 800
-		----------------------------------------------------------
-deviceID = 3
-	layer = PHY
-		entityID = 0
-			errorProb = 20
-			bufferSize = 40000
-		-----------------------------
-		entityID = 1
-			errorProb = 20
-			bufferSize = 40000
-			upperMode = 0
-		-----------------------------
-	layer = LNK
-		entityID = 0
-			lowerMode0 = 0
-		-----------------------------
-		entityID = 1
-			lowerMode0 = 0
-		-----------------------------
-	layer = NET
-		entityID = 0
-			myAddr = 3
-			lowerMode0 = 1
-			lowerMode1 = 1
-		------------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 3
-			workMode = 0
-			autoSendTime = 10
-			autoSendSize = 800
-----------------------------------------------------------
-deviceID = 4
-	layer = PHY
-		entityID = 0
-			errorProb = 20
-			bufferSize = 40000
-			upperMode = 0
-		-----------------------------
-		entityID = 1
-			errorProb = 20
-			bufferSize = 40000
-			upperMode = 0
-		-----------------------------
-	layer = LNK
-		entityID = 0
-			myAddr = 40
-			lowerMode0 = 0
-		-----------------------------
-		entityID = 1
-			myAddr = 41
-			lowerMode0 = 0
-		-----------------------------
-	layer = NET
-		entityID = 0
-			myAddr = 40
-		------------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 4
-			workMode = 0
-			autoSendTime = 10
-			autoSendSize = 800
-		----------------------------------------------------------
-deviceID = 5
-	layer = PHY
-		entityID = 0
-			errorProb = 20
-			bufferSize = 40000
-			upperMode = 0
-		-----------------------------
-	layer = LNK
-		entityID = 0
-			myAddr = 50
-			lowerMode0 = 0
-		-----------------------------
-	layer = NET
-		entityID = 0
-			myPort = 15300
-		------------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 5
-			workMode = 0
-			autoSendTime = 10
-			autoSendSize = 800
-----------------------------------------------------------
-deviceID = 6
-	layer = PHY
-		entityID = 0
-			errorProb = 20
-			bufferSize = 40000
-			upperMode = 0
-		-----------------------------
-	layer = LNK
-		entityID = 0
-			myAddr = 60
-			lowerMode0 = 0
-		-----------------------------
-	layer = NET
-		entityID = 0
-			myAddr = 6
-		------------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 6
-			workMode = 0
-			autoSendTime = 10
-			autoSendSize = 800
-----------------------------------------------------------
