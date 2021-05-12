@@ -23,7 +23,7 @@ extern char strEntity[128];				//实体号，字符串形式，从0开始，可以通过atoi函数变
 void TimeOut();
 void RecvfromLower(U8* buf, int len, int ifNo);
 void RecvfromUpper(U8* buf, int len);
-//void InitFunction();
+void InitFunction();
 //void EndFunction();
 
 //------------重要的会使用到的函数------------------------------------------------------------
@@ -44,5 +44,7 @@ void StartTimerPeriodically(unsigned long ulInterval);
 //打印统计信息
 void print_statistics();
 void menu();
+
+int call_send_to_lower(U8* bufSend, int len, int port);
 
 #endif

@@ -75,6 +75,7 @@ int SendtoUpper(U8* buf, int len) {
 int SendtoLower(U8* buf, int len,int ifNo) {
 	int sendlen;
 	if (ifNo < 0 || ifNo >= lowerNumber) return 0;
+	printf("向低层发送%d位\n", len);
 	sendlen = sendto(sock, (char*)buf, len, 0, (sockaddr*) & (lower_addr[ifNo]), sizeof(sockaddr_in));
 	return sendlen;
 }
@@ -272,7 +273,7 @@ int main(int argc, char* argv[]) {
 	arg = 1;
 	ioctlsocket(sock, FIONBIO, &arg);
 
-	//InitFunction();
+	InitFunction();
 
 	while (1) {
 		FD_ZERO(&readfds);

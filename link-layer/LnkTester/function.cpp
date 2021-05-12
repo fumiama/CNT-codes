@@ -6,6 +6,7 @@
 #include "CfgFileParms.h"
 #include "function.h"
 #include "lnklib.h"
+#include <process.h>
 using namespace std;
 
 //ÒÔÏÂÎªÖØÒªµÄ±äÁ¿
@@ -32,13 +33,24 @@ char strDevID[128];			//Éè±¸ºÅ£¬×Ö·û´®ĞÎÊ½£¬´Ó1¿ªÊ¼
 char strLayer[128];				//²ã´ÎÃû
 char strEntity[128];				//ÊµÌåºÅ£¬×Ö·û´®ĞÎÊ½£¬´Ó0¿ªÊ¼£¬¿ÉÒÔÍ¨¹ıatoiº¯Êı±ä³ÉÕûÊıÔÚ³ÌĞòÖĞÊ¹ÓÃ
 
+static void check_key() {
+	while (1) {
+		if (_kbhit()) {
+			//¼üÅÌÓĞ¶¯×÷£¬½øÈë²Ëµ¥Ä£Ê½
+			menu();
+		}
+		Sleep(100);
+	}
+}
 //***************ÖØÒªº¯ÊıÌáĞÑ******************************
 //Ãû³Æ£ºInitFunction
 //¹¦ÄÜ£º³õÊ¼»¯¹¦ÄÜÃæ£¬ÓÉmainº¯ÊıÔÚ¶ÁÍêÅäÖÃÎÄ¼ş£¬ÕıÊ½½øÈëÇı¶¯»úÖÆÇ°µ÷ÓÃ
 //ÊäÈë£º
 //Êä³ö£º
-//void InitFunction() {
-//}
+void InitFunction() {
+	_beginthread((_beginthread_proc_type)check_key, 0, NULL);
+}
+
 //***************ÖØÒªº¯ÊıÌáĞÑ******************************
 //Ãû³Æ£ºEndFunction
 //¹¦ÄÜ£º½áÊø¹¦ÄÜÃæ£¬ÓÉmainº¯ÊıÔÚÊÕµ½exitÃüÁî£¬Õû¸ö³ÌĞòÍË³öÇ°µ÷ÓÃ
@@ -59,10 +71,6 @@ char strEntity[128];				//ÊµÌåºÅ£¬×Ö·û´®ĞÎÊ½£¬´Ó0¿ªÊ¼£¬¿ÉÒÔÍ¨¹ıatoiº¯Êı±ä³ÉÕûÊıÔ
 //Êä³ö£º
 void TimeOut() {
 	printCount++;
-	if (_kbhit()) {
-		//¼üÅÌÓĞ¶¯×÷£¬½øÈë²Ëµ¥Ä£Ê½
-		menu();
-	}
 	print_statistics();
 }
 //------------»ªÀöµÄ·Ö¸îÏß£¬ÒÔÏÂÊÇÊı¾İµÄÊÕ·¢--------------------------------------------
@@ -184,9 +192,7 @@ static U8 kbBuf[128];									//°´¼ü»º³åÇø
 void menu() {
 	int selection;
 	unsigned short port;
-	int iSndRetval;
 	int len;
-	U8* bufSend;
 	//·¢ËÍ|´òÓ¡£º[·¢ËÍ¿ØÖÆ£¨0£¬µÈ´ı¼üÅÌÊäÈë£»1£¬×Ô¶¯£©][´òÓ¡¿ØÖÆ£¨0£¬½ö¶¨ÆÚ´òÓ¡Í³¼ÆĞÅÏ¢£»1£¬°´bitÁ÷´òÓ¡Êı¾İ£¬2°´×Ö½ÚÁ÷´òÓ¡Êı¾İ]
 	cout << endl << endl << "Éè±¸ºÅ:" << strDevID << ",    ²ã´Î:" << strLayer << ",    ÊµÌåºÅ:" << strEntity;
 	cout << endl << "1-Æô¶¯×Ô¶¯·¢ËÍ(ÎŞĞ§);" << endl << "2-Í£Ö¹×Ô¶¯·¢ËÍ£¨ÎŞĞ§£©; " << endl << "3-´Ó¼üÅÌÊäÈë·¢ËÍ; ";
@@ -195,10 +201,10 @@ void menu() {
 	cin >> selection;
 	switch (selection) {
 	case 0:
-
 		break;
 	case 1:
 		iWorkMode = 10 + iWorkMode % 10;
+		_beginthread((_beginthread_proc_type)auto_send, 0, NULL);
 		break;
 	case 2:
 		iWorkMode = iWorkMode % 10;
@@ -213,39 +219,7 @@ void menu() {
 			cout << "Ã»ÓĞÕâ¸ö½Ó¿Ú" << endl;
 			return;
 		}
-		if (lowerMode[port] == 0) {
-			//ÏÂ²ã½Ó¿ÚÊÇ±ÈÌØÁ÷Êı×é,ĞèÒªÒ»Æ¬ĞÂµÄ»º³åÀ´×ª»»¸ñÊ½
-			bufSend = (U8*)malloc(len * 8);
-
-			iSndRetval = ByteArrayToBitArray(bufSend, len * 8, kbBuf, len);
-			iSndRetval = SendtoLower(bufSend, iSndRetval, port);
-			free(bufSend);
-		}
-		else {
-			//ÏÂ²ã½Ó¿ÚÊÇ×Ö½ÚÊı×é£¬Ö±½Ó·¢ËÍ
-			iSndRetval = SendtoLower(kbBuf, len, port);
-			iSndRetval = iSndRetval * 8; //»»Ëã³ÉÎ»
-		}
-		//·¢ËÍÍ³¼Æ
-		if (iSndRetval > 0) {
-			iSndTotalCount++;
-			iSndTotal += iSndRetval;
-		}
-		else {
-			iSndErrorCount++;
-		}
-		//¿´Òª²»Òª´òÓ¡Êı¾İ
-		cout << endl << "Ïò½Ó¿Ú " << port << " ·¢ËÍÊı¾İ£º" << endl;
-		switch (iWorkMode % 10) {
-		case 1:
-			print_data_bit(kbBuf, len, 1);
-			break;
-		case 2:
-			print_data_byte(kbBuf, len, 1);
-			break;
-		case 0:
-			break;
-		}
+		else call_send_to_lower(kbBuf, len, port);
 		break;
 	case 4:
 		iWorkMode = (iWorkMode / 10) * 10 + 0;
@@ -428,5 +402,43 @@ void print_data_byte(U8* A, int length, int iMode) {
 		}
 	}
 	printf("\n");
+}
+
+int call_send_to_lower(U8* bufSend, int len, int port) {
+	int iSndRetval;
+	if (lowerMode[port] == 0) {
+		//ÏÂ²ã½Ó¿ÚÊÇ±ÈÌØÁ÷Êı×é,ĞèÒªÒ»Æ¬ĞÂµÄ»º³åÀ´×ª»»¸ñÊ½
+		bufSend = (U8*)malloc(len * 8);
+
+		iSndRetval = ByteArrayToBitArray(bufSend, len * 8, kbBuf, len);
+		iSndRetval = SendtoLower(bufSend, iSndRetval, port);
+		free(bufSend);
+	}
+	else {
+		//ÏÂ²ã½Ó¿ÚÊÇ×Ö½ÚÊı×é£¬Ö±½Ó·¢ËÍ
+		iSndRetval = SendtoLower(kbBuf, len, port);
+		iSndRetval = iSndRetval * 8; //»»Ëã³ÉÎ»
+	}
+	//·¢ËÍÍ³¼Æ
+	if (iSndRetval > 0) {
+		iSndTotalCount++;
+		iSndTotal += iSndRetval;
+	}
+	else {
+		iSndErrorCount++;
+	}
+	//¿´Òª²»Òª´òÓ¡Êı¾İ
+	cout << endl << "Ïò½Ó¿Ú " << port << " ·¢ËÍÊı¾İ£º" << endl;
+	switch (iWorkMode % 10) {
+	case 1:
+		print_data_bit(kbBuf, len, 1);
+		break;
+	case 2:
+		print_data_byte(kbBuf, len, 1);
+		break;
+	case 0:
+		break;
+	}
+	return iSndRetval;
 }
 //end=========ÖØÒªµÄ¾ÍÕâĞ©£¬ÕæÕıĞèÒª¶¯ÊÖ¸ÄµÄ¡°Ö»ÓĞ¡±TimeOut£¬RecvFromUpper£¬RecvFromLower=========================
