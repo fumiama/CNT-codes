@@ -22,6 +22,7 @@ void check_recv(U8* buf, size_t len, int is_bit_arr) {
 			SendtoUpper(this_frame + 8 + 8 + 8, this_frame_size - 8 - 8 - 8);
 		}
 		else SendtoUpper(&buf[head_len - 2], len - info_len + 2);
+		send_ack();
 		break;
 	case IS_ERR_FRAME:
 		puts("已丢弃错误帧");
@@ -185,14 +186,14 @@ int unpack_frame(U8* buf, size_t len, int is_bit_arr) {
 	else return IS_ERR_FRAME;
 }
 
-U8* pack_frame(U8* buf, U8* src, U8*dst, int* len, char is_bit_arr) {
+U8* pack_frame(U8* buf, U8* src, U8*dst, int* len, char is_bit_arr, int is_ack) {
 	if (is_bit_arr) {
 		printf("发送数据: ");
 		for (int i = 0; i < *len; i++) {
 			putchar(buf[i] + 48);
 		}
 		putchar('\n');
-		U8* buf2crc = add_src_addr(add_dest_addr(add_ack_head(buf, *len, 0), dst, *len + 8), src, *len + 8 + 8);
+		U8* buf2crc = add_src_addr(add_dest_addr(add_ack_head(buf, *len, is_ack), dst, *len + 8), src, *len + 8 + 8);
 		printf("buf2crc: ");
 		*len += 8 + 8 + 8;
 		for (int i = 0; i < *len; i++) {
@@ -352,6 +353,33 @@ U8* pack_frame(U8* buf, int len, int* len_packed) //成帧 buf_memory_return为成帧
 	return buf_memory_return;
 }
 
+static void _send_and_wait_thread() {
+	is_waiting = 1;
+	uint8_t cnt = 0;
+	do {
+		if (!(cnt--)) SendtoLower(prev_send_buf, prev_send_bufsz, 0);
+		Sleep(100);
+	} while (is_waiting);
+	puts("接收到ACK帧");
+}
+
+void send_and_wait(U8* bitframe, int len) {
+	if (!is_waiting) {
+		save_send_buf(bitframe, len);
+		free(bitframe);
+		_beginthread((_beginthread_proc_type)_send_and_wait_thread, 0, NULL);
+	}
+}
+
+void send_ack() {
+	U8* buf = (U8*)malloc(8);
+	int len = 0;
+	U8* bitframe = pack_frame(buf, this_frame + 8, this_frame, &len, 1, 1);
+	SendtoLower(bitframe, len, 0);
+	free(bitframe);
+	puts("发送ACK帧");
+}
+
 void auto_send() {
 	U8* dst = (U8*)"\1\1\1\1\1\1\1\1";		//模拟目的地址
 	U8* src = (U8*)"\1\0\1\0\1\0\1\0";		//模拟源地址
@@ -361,9 +389,8 @@ void auto_send() {
 			if (buf[i]) buf[i] = 1;
 		}
 		int len = 16;
-		U8* bitframe = pack_frame(buf, src, dst, &len, 1);
-		SendtoLower(bitframe, len, 0);
-		free(bitframe);
+		U8* bitframe = pack_frame(buf, src, dst, &len, 1, 0);
+		send_and_wait(bitframe, len);
 		Sleep(1000);
 	}
 }

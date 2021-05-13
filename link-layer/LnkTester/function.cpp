@@ -100,7 +100,7 @@ void RecvfromUpper(U8* buf, int len) {
 			U8* dst = (U8*)"\1\1\1\1\1\1\1\1";		//模拟目的地址
 			U8* src = (U8*)"\1\0\1\0\1\0\1\0";		//模拟源地址
 			len *= 8;
-			U8* packed_frame = pack_frame(bufSend, src, dst, &len, 1);
+			U8* packed_frame = pack_frame(bufSend, src, dst, &len, 1, 0);
 			//发送
 			iSndRetval = SendtoLower(packed_frame, iSndRetval + FRAME_INFO_LEN, 0); //参数依次为数据缓冲，长度，接口号
 		}
