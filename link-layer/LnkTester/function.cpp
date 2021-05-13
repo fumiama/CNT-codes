@@ -97,7 +97,10 @@ void RecvfromUpper(U8* buf, int len) {
 				return;
 			}
 			iSndRetval = ByteArrayToBitArray(bufSend, len * 8, buf, len);
-			U8* packed_frame = pack_frame(bufSend, len * 8, 1);
+			U8* dst = (U8*)"\1\1\1\1\1\1\1\1";		//模拟目的地址
+			U8* src = (U8*)"\1\0\1\0\1\0\1\0";		//模拟源地址
+			len *= 8;
+			U8* packed_frame = pack_frame(bufSend, src, dst, &len, 1);
 			//发送
 			iSndRetval = SendtoLower(packed_frame, iSndRetval + FRAME_INFO_LEN, 0); //参数依次为数据缓冲，长度，接口号
 		}
@@ -195,7 +198,7 @@ void menu() {
 	int len;
 	//发送|打印：[发送控制（0，等待键盘输入；1，自动）][打印控制（0，仅定期打印统计信息；1，按bit流打印数据，2按字节流打印数据]
 	cout << endl << endl << "设备号:" << strDevID << ",    层次:" << strLayer << ",    实体号:" << strEntity;
-	cout << endl << "1-启动自动发送(无效);" << endl << "2-停止自动发送（无效）; " << endl << "3-从键盘输入发送; ";
+	cout << endl << "1-启动自动发送; " << endl << "2-停止自动发送; " << endl << "3-从键盘输入发送; ";
 	cout << endl << "4-仅打印统计信息; " << endl << "5-按比特流打印数据内容;" << endl << "6-按字节流打印数据内容;";
 	cout << endl << "0-取消" << endl << "请输入数字选择命令：";
 	cin >> selection;

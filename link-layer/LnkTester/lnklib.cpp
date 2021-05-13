@@ -19,11 +19,9 @@ void check_recv(U8* buf, size_t len, int is_bit_arr) {
 		break;
 	case IS_DAT_FRAME:
 		if (is_bit_arr) {
-			size_t sz = len / 8 + 1;
-			U8* tmp = (U8*)malloc(sz);
-			BitArrayToByteArray(this_frame, this_frame_size, tmp, sz);
-			SendtoUpper(&tmp[FRAME_HEAD_LEN - 16], sz - FRAME_INFO_LEN + 16);
-		} else SendtoUpper(&buf[head_len - 2], len - info_len + 2);
+			SendtoUpper(this_frame + 8 + 8 + 8, this_frame_size - 8 - 8 - 8);
+		}
+		else SendtoUpper(&buf[head_len - 2], len - info_len + 2);
 		break;
 	case IS_ERR_FRAME:
 		puts("已丢弃错误帧");
@@ -156,97 +154,28 @@ U8* detect_frame(U8* buf, size_t len, int is_bit_arr) {
 }
 
 int CRC16_receive_check(char* pDataIn, int iLenIn)
-//返回值为1或者-1 其中1表示校验成功，-1表示校验失败 输入为比特流数组，iLenIn为长度 其中CRC_return为校验成功后删去校验位的结果
+//返回值为0为成功
 {
-	int wResult = 0;
-	int wTableNo = 0;
-	int i = 0;
-	int CRC_i_1, CRC_i_2;
-	char* CRC_1;
-	CRC_1 = (char*)malloc(sizeof(char) * (iLenIn + CRC_len) * 2);
-	char* CRC_return;
-	CRC_return = (char*)malloc(sizeof(char) * (iLenIn + CRC_len) * 2);
-	unsigned char* CRC;
-	CRC = (unsigned char*)malloc(sizeof(unsigned char) * (iLenIn + CRC_len) * 2);
-	if (iLenIn % 8 != 0)
-	{
-		for (i = 0; i < iLenIn - 16; i++)
-		{
-			CRC_1[i] = pDataIn[i];
-			//printf("%c", CRC_1[i]);
-		}
-		for (i = 0; i < 8 - iLenIn % 8; i++)
-		{
-			CRC_1[i + iLenIn - 16] = 0;
-		}
-		for (i = 0; i < 8; i++)
-		{
-			CRC_1[i + iLenIn - 8 - iLenIn % 8] = pDataIn[iLenIn - 8 + i];
-		}
-		for (i = 0; i < 8; i++)
-		{
-			CRC_1[i + iLenIn - iLenIn % 8] = pDataIn[iLenIn - 16 + i];
-		}
-	}
-	else
-	{
-		for (i = 0; i < iLenIn - 16; i++)
-		{
-			CRC_1[i] = pDataIn[i];
-		}
-		for (i = 0; i < 8; i++)
-		{
-			CRC_1[i + iLenIn - 16] = pDataIn[i + iLenIn - 8];
-		}
-		for (i = 0; i < 8; i++)
-		{
-			CRC_1[i + iLenIn - 8] = pDataIn[i + iLenIn - 16];
-		}
-	}
-	int m_location = 0;
-	int CRC_location = 0;
-	m_location = iLenIn + 8 - iLenIn % 8;
-	int location_sum = 0;
-	int sum_2 = 0;
-	for (CRC_i_1 = 0; CRC_i_1 < m_location; CRC_i_1 = CRC_i_1 + 8)
-	{
-		for (CRC_i_2 = 0; CRC_i_2 < 8; CRC_i_2++)
-		{
-			sum_2 = (int(CRC_1[location_sum + 7 - CRC_i_2])) * pow(2, CRC_i_2) + sum_2;
-		}
-		location_sum = location_sum + 8;
-		CRC[CRC_location] = char(sum_2);
-		CRC_location++;
-		sum_2 = 0;
-	}
-	for (i = 0; i < CRC_location; i++)
-	{
-		wTableNo = ((wResult & 0xff) ^ (CRC[i] & 0xff));
-		wResult = ((wResult >> 8) & 0xff) ^ wCRC16Table[wTableNo];
-	}
-	if (wResult != 0)
-	{
-		printf("校验失败");
-		return -1;
-	}
-	//printf_s("\n%d\n", iLenIn);
-	for (i = 0; i < iLenIn - 16; i++)
-	{
-		CRC_return[i] = CRC_1[i];
-	}
-	free(CRC_1);
-	free(CRC);
-	free(CRC_return);
-	return 1;
+	U8* bytearr = (U8*)malloc(iLenIn / 8);
+	BitArrayToByteArray((U8*)pDataIn, iLenIn, bytearr, iLenIn / 8);
+	uint16_t* thiscrc = (uint16_t*)(bytearr + iLenIn / 8 - 2);
+	uint16_t calccrc = crc16((char*)bytearr, iLenIn / 8 - 2);
+	this_frame = (U8*)pDataIn;
+	this_frame_size = iLenIn - 16;
+	return *thiscrc - calccrc;
 }
 
 int unpack_frame(U8* buf, size_t len, int is_bit_arr) {
 	if (is_bit_arr) {
 		U8* frame = detect_frame(buf, len, is_bit_arr);
 		if (frame) {
-			if (CRC16_receive_check((char*)frame, len)) {
-				this_frame = frame;
-				if (frame[23]) return IS_ACK_FRAME;
+			printf("recv frame: ");
+			for (int i = 0; i < this_frame_size; i++) {
+				putchar(frame[i] + 48);
+			}
+			putchar('\n');
+			if (!CRC16_receive_check((char*)frame, this_frame_size)) {
+				if (this_frame[23]) return IS_ACK_FRAME;
 				else return IS_DAT_FRAME;
 			}
 			else free(frame);
@@ -256,10 +185,34 @@ int unpack_frame(U8* buf, size_t len, int is_bit_arr) {
 	else return IS_ERR_FRAME;
 }
 
-U8* pack_frame(U8* buf, size_t len, char is_bit_arr) {
+U8* pack_frame(U8* buf, U8* src, U8*dst, int* len, char is_bit_arr) {
 	if (is_bit_arr) {
-		int l;
-		return pack_frame(buf, len, &l);
+		printf("发送数据: ");
+		for (int i = 0; i < *len; i++) {
+			putchar(buf[i] + 48);
+		}
+		putchar('\n');
+		U8* buf2crc = add_src_addr(add_dest_addr(add_ack_head(buf, *len, 0), dst, *len + 8), src, *len + 8 + 8);
+		printf("buf2crc: ");
+		*len += 8 + 8 + 8;
+		for (int i = 0; i < *len; i++) {
+			putchar(buf2crc[i] + 48);
+		}
+		putchar('\n');
+		U8* buf2pack = append_crc16(buf2crc, *len);
+		*len += 16;
+		printf("buf2pack: ");
+		for (int i = 0; i < *len; i++) {
+			putchar(buf2pack[i] + 48);
+		}
+		putchar('\n');
+		U8* bitframe = pack_frame(buf2pack, *len, len);
+		printf("frame: ");
+		for (int i = 0; i < *len; i++) {
+			putchar(bitframe[i] + 48);
+		}
+		putchar('\n');
+		return bitframe;
 	}
 	return NULL;
 }
@@ -307,115 +260,16 @@ U8* add_ack_head(U8* buf, int len, int ack_status) {
 	return rbuf;
 }
 
-static int transfer(int x, char* a)
-{
-	int p = 1, y = 0, yushu, count = 0;;
-	while (1)
-	{
-		yushu = x % 2;
-		a[count] = char(yushu);
-		count++;
-		x /= 2;
-		y += yushu * p;
-		p *= 10;
-		if (x < 2)
-		{
-			a[count] = char(yushu);
-			count++;
-			y += x * p;
-			break;
-		}
-	}
-	return count;
-}
-
 U8* append_crc16(U8* pDataIn, int iLenIn) //输入参数为buf数组 和 len 长度;
 {
-	int wResult = 0;
-	int wTableNo = 0;
-	int i = 0;
-	int CRC_i_1, CRC_i_2;
-	char* CRC_1;
-	CRC_1 = (char*)malloc(sizeof(char) * (iLenIn + CRC_len) * 2);
-	U8* CRC_return = (U8*)malloc(sizeof(char) * (iLenIn + CRC_len) * 2);
-	unsigned char* CRC;
-	CRC = (unsigned char*)malloc(sizeof(unsigned char) * (iLenIn + CRC_len) * 2);
-	if (iLenIn % 8 != 0)
-	{
-		for (i = 0; i < iLenIn; i++)
-		{
-			CRC_1[i] = pDataIn[i];
-		}
-		for (i = 0; i < 8 - iLenIn % 8; i++)
-		{
-			CRC_1[i + iLenIn] = 0;
-		}
-	}
-	else
-	{
-		for (i = 0; i < iLenIn; i++)
-		{
-			CRC_1[i] = pDataIn[i];
-		}
-	}
-	int m_location = 0;
-	int CRC_location = 0;
-	m_location = iLenIn + 8 - iLenIn % 8;
-	int location_sum = 0;
-	int sum_2 = 0;
-	for (CRC_i_1 = 0; CRC_i_1 < m_location; CRC_i_1 = CRC_i_1 + 8)
-	{
-		for (CRC_i_2 = 0; CRC_i_2 < 8; CRC_i_2++)
-		{
-			sum_2 = CRC_1[location_sum + 7 - CRC_i_2] * pow(2, CRC_i_2) + sum_2;
-		}
-		location_sum = location_sum + 8;
-		CRC[CRC_location] = char(sum_2);
-		CRC_location++;
-		sum_2 = 0;
-	}
-
-	for (i = 0; i < CRC_location; i++)
-	{
-		wTableNo = ((wResult & 0xff) ^ (CRC[i] & 0xff));
-		wResult = ((wResult >> 8) & 0xff) ^ wCRC16Table[wTableNo];
-	}
-	//校验码为wResult;
-	int len_to2 = 0;
-	char CRC_arry[16] = { 0 };
-	char CRC_arry_1[16] = { 0 };
-	len_to2 = transfer(wResult, CRC_arry);
-	if (len_to2 < 16)
-	{
-		for (CRC_i_1 = 0; CRC_i_1 < 16 - len_to2; CRC_i_1++)
-		{
-			CRC_arry_1[CRC_i_1] = 0;
-		}
-		for (CRC_i_2 = 0; CRC_i_2 < len_to2; CRC_i_2++)
-		{
-			CRC_arry_1[16 - len_to2 + CRC_i_2] = CRC_arry[len_to2 - 1 - CRC_i_2];
-		}
-	}
-	else {
-		for (CRC_i_2 = 0; CRC_i_2 < len_to2; CRC_i_2++)
-		{
-			CRC_arry_1[CRC_i_2] = CRC_arry[len_to2 - CRC_i_2];
-		}
-	}
-	for (CRC_i_1 = 0; CRC_i_1 < iLenIn; CRC_i_1++)
-	{
-		CRC_return[CRC_i_1] = CRC_1[CRC_i_1];
-	}
-	for (CRC_i_1 = 0; CRC_i_1 < 16; CRC_i_1++)
-	{
-		CRC_return[iLenIn + CRC_i_1] = CRC_arry_1[CRC_i_1];
-	}
-	// CRC_return为返回比特流数组可以打印观测
-	//iLenIn = iLenIn + CRC_i_1;//处理之后长度变为了iLenIn
-	free(CRC_1);
-	free(CRC);
-	free(pDataIn);
-	return CRC_return;
+	U8* bytearr = (U8*)malloc(iLenIn / 8 + 2);
+	BitArrayToByteArray(pDataIn, iLenIn, bytearr, iLenIn / 8);
+	uint32_t r = crc16((char*)bytearr, iLenIn / 8);
+	U8* appended = (U8*)malloc(iLenIn + 16);
+	*(uint16_t*)(bytearr + iLenIn / 8) = r;
+	ByteArrayToBitArray(appended, iLenIn + 16, bytearr, iLenIn / 8 + 2);
+	free(bytearr);
+	return appended;
 }
 
 U8* pack_frame(U8* buf, int len, int* len_packed) //成帧 buf_memory_return为成帧结果
@@ -438,6 +292,7 @@ U8* pack_frame(U8* buf, int len, int* len_packed) //成帧 buf_memory_return为成帧
 	int the_location_test = 0, the_location_memory = 0;//位置确认
 	int count_fake_frame = 0;//数据中连续5个1 此书计数器
 	int num_fake_frame = 0;
+	int judge_1 = 0;//加了一个判断，因为发现如果出现连续的五个一，最后长度会大1
 	for (Frameing_i_1 = 0; Frameing_i_1 < len; Frameing_i_1++)
 	{
 		if (the_location_test > len)
@@ -455,6 +310,7 @@ U8* pack_frame(U8* buf, int len, int* len_packed) //成帧 buf_memory_return为成帧
 					count_fake_frame++;
 					if (count_fake_frame == 5)
 					{
+						judge_1++;
 						for (Frameing_i_2 = 0; Frameing_i_2 < frame_count_1 - 1; Frameing_i_2++)
 						{
 							the_location_memory++;
@@ -478,7 +334,10 @@ U8* pack_frame(U8* buf, int len, int* len_packed) //成帧 buf_memory_return为成帧
 			the_location_test++;
 		}
 	}
-	the_location_memory--;
+	if (judge_1 > 0)
+	{
+		the_location_memory--;
+	}
 	memcpy(buf_memory_return, frame_standard, 8);
 	memcpy(buf_memory_return + 8, buf_memory, the_location_memory);
 	memcpy(buf_memory_return + 8 + the_location_memory, frame_standard, 8);
@@ -501,38 +360,10 @@ void auto_send() {
 		for (int i = 0; i < 16; i++) {
 			if (buf[i]) buf[i] = 1;
 		}
-		printf("发送数据: ");
-		for(int i = 0; i < 16; i++) {
-			putchar(buf[i] + 48);
-		}
-		putchar('\n');
-		U8* buf2crc = add_src_addr(add_dest_addr(add_ack_head(buf, 16, 0), dst, 16 + 8), src, 16 + 8 + 8);
-		printf("buf2crc: ");
-		for (int i = 0; i < 40; i++) {
-			putchar(buf2crc[i] + 48);
-		}
-		putchar('\n');
-		U8* buf2pack = append_crc16(buf2crc, 16 + 8 + 8 + 8);
-		printf("buf2pack: ");
-		for (int i = 0; i < 56; i++) {
-			putchar(buf2pack[i] + 48);
-		}
-		putchar('\n');
-		int len = 0;
-		U8* bitframe = pack_frame(buf2pack, 16 + 8 + 8 + 8 + 16, &len);
-		printf("frame: ");
-		for (int i = 0; i < len; i++) {
-			putchar(bitframe[i] + 48);
-		}
-		putchar('\n');
-		//U8* byteframe = (U8*)malloc(len/8 + 1);
-		//BitArrayToByteArray(bitframe, len, byteframe, len/8+1);
-		//free(bitframe);
-		//int l = call_send_to_lower(byteframe, len / 8 + 1, 0);
-		//printf("发送了%d位\n", l);
+		int len = 16;
+		U8* bitframe = pack_frame(buf, src, dst, &len, 1);
 		SendtoLower(bitframe, len, 0);
 		free(bitframe);
-		//free(byteframe);
 		Sleep(1000);
 	}
 }

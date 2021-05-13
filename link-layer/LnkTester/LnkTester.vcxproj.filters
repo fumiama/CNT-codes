@@ -27,6 +27,9 @@
     <ClCompile Include="lnklib.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="crc16.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CfgFileParms.h">
@@ -36,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="lnklib.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="crc16.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
