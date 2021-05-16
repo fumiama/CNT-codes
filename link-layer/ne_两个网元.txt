@@ -62,5 +62,6 @@ deviceID = 2
 		-----------------------------
 	layer = LNK
 		entityID = 0
+			myAddr = 20
 			lowerMode0 = 0
 		------------------------------

@@ -6,6 +6,7 @@
 #include "CfgFileParms.h"
 #include "function.h"
 #include "lnklib.h"
+#include "mac.h"
 #include <process.h>
 using namespace std;
 
@@ -49,6 +50,7 @@ static void check_key() {
 //输出：
 void InitFunction() {
 	_beginthread((_beginthread_proc_type)check_key, 0, NULL);
+	notify_my_existance();
 }
 
 //***************重要函数提醒******************************
@@ -152,9 +154,7 @@ void RecvfromUpper(U8* buf, int len) {
 //输入：U8 * buf,低层递交上来的数据， int len，数据长度，单位字节，int ifNo ，低层实体号码，用来区分是哪个低层
 //输出：
 void RecvfromLower(U8* buf, int len, int ifNo) {
-	if (ifNo == 0) {
-		check_recv(buf, len, !lowerMode[0]);
-	}
+	check_recv(buf, len, ifNo);
 	//打印
 	cout << endl << "接收接口 " << ifNo << " 数据：" << endl;
 	switch (iWorkMode % 10) {

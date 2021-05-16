@@ -2,27 +2,55 @@
 #include <stdlib.h>
 #include <string.h>
 #include <Windows.h>
+#include <process.h>
 #include "lnklib.h"
+#include "mac.h"
+#include "crc16.h"
 
 void save_send_buf(U8* buf, size_t size) {
-	is_waiting = 1;
+	//is_waiting = 1;
 	memcpy(prev_send_buf, buf, size);
 	prev_send_bufsz = size;
 }
 
-void check_recv(U8* buf, size_t len, int is_bit_arr) {
-	unsigned int head_len = is_bit_arr ? FRAME_HEAD_LEN : (FRAME_HEAD_LEN / 8);;
-	unsigned int info_len = is_bit_arr ? FRAME_INFO_LEN : (FRAME_INFO_LEN / 8);;
-	switch (unpack_frame(buf, len, is_bit_arr)) {
+void check_recv(U8* buf, int len, int ifNo) {
+	switch (unpack_frame(buf, len)) {
 	case IS_ACK_FRAME:
 		go_next_frame();
 		break;
 	case IS_DAT_FRAME:
-		if (is_bit_arr) {
-			SendtoUpper(this_frame + 8 + 8 + 8, this_frame_size - 8 - 8 - 8);
+		if (is_broadcast_frame(this_frame)) {
+			puts("检查广播帧");
+			if (!send_from_me(this_frame)) {
+				if (get_ttl(this_frame) > 0) {
+					if (is_notification(this_frame)) on_recv_notification(this_frame, this_frame_size, ifNo);
+					else {
+						SendtoUpper(this_frame + 8 + 8 + 8, this_frame_size - 8 - 8 - 8);
+						flood(this_frame, &len, ifNo);
+					}
+				}
+				else {
+					puts("丢弃TTL为0的广播帧");
+					free(this_frame);
+				}
+			}
+			else {
+				puts("丢弃自己发的广播帧");
+				free(this_frame);
+			}
 		}
-		else SendtoUpper(&buf[head_len - 2], len - info_len + 2);
-		send_ack();
+		else if(send_to_me(this_frame)) {		//到达
+			puts("收到发给本机的帧");
+			SendtoUpper(this_frame + 8 + 8 + 8, this_frame_size - 8 - 8 - 8);
+			send_ack(ifNo);
+			free(this_frame);
+		}
+		else {	//转发
+			puts("转发帧");
+			send_ack(ifNo);
+			send_to_dst_and_wait(this_frame + 8, this_frame + 24, this_frame_size - 24);
+			free(this_frame);
+		}
 		break;
 	case IS_ERR_FRAME:
 		puts("已丢弃错误帧");
@@ -36,8 +64,7 @@ void go_next_frame() {
 	prev_send_bufsz = 0;
 }
 
-U8* detect_frame(U8* buf, size_t len, int is_bit_arr) {
-	if (is_bit_arr) {
+U8* detect_frame(U8* buf, size_t len) {
 		int Frameing_i_1, Frameing_i_2;//循环
 		int* buf_frameing_test;
 		int Frame_Head = 0, Frame_Tail = 0;
@@ -150,8 +177,6 @@ U8* detect_frame(U8* buf, size_t len, int is_bit_arr) {
 			free(buf_memory);
 			return buf_memory_return;
 		}
-	}
-	else return NULL;
 }
 
 int CRC16_receive_check(char* pDataIn, int iLenIn)
@@ -166,9 +191,8 @@ int CRC16_receive_check(char* pDataIn, int iLenIn)
 	return *thiscrc - calccrc;
 }
 
-int unpack_frame(U8* buf, size_t len, int is_bit_arr) {
-	if (is_bit_arr) {
-		U8* frame = detect_frame(buf, len, is_bit_arr);
+int unpack_frame(U8* buf, size_t len) {
+		U8* frame = detect_frame(buf, len);
 		if (frame) {
 			printf("recv frame: ");
 			for (int i = 0; i < this_frame_size; i++) {
@@ -182,40 +206,44 @@ int unpack_frame(U8* buf, size_t len, int is_bit_arr) {
 			else free(frame);
 		}
 		return IS_ERR_FRAME;
-	}
-	else return IS_ERR_FRAME;
 }
 
-U8* pack_frame(U8* buf, U8* src, U8*dst, int* len, char is_bit_arr, int is_ack) {
-	if (is_bit_arr) {
-		printf("发送数据: ");
-		for (int i = 0; i < *len; i++) {
-			putchar(buf[i] + 48);
-		}
-		putchar('\n');
-		U8* buf2crc = add_src_addr(add_dest_addr(add_ack_head(buf, *len, is_ack), dst, *len + 8), src, *len + 8 + 8);
-		printf("buf2crc: ");
-		*len += 8 + 8 + 8;
-		for (int i = 0; i < *len; i++) {
-			putchar(buf2crc[i] + 48);
-		}
-		putchar('\n');
-		U8* buf2pack = append_crc16(buf2crc, *len);
-		*len += 16;
-		printf("buf2pack: ");
-		for (int i = 0; i < *len; i++) {
-			putchar(buf2pack[i] + 48);
-		}
-		putchar('\n');
-		U8* bitframe = pack_frame(buf2pack, *len, len);
-		printf("frame: ");
-		for (int i = 0; i < *len; i++) {
-			putchar(bitframe[i] + 48);
-		}
-		putchar('\n');
-		return bitframe;
+U8* pack_frame(U8* buf, U8* src, U8*dst, int* len, int not_forward, int is_ack) {
+	printf("发送数据: ");
+	for (int i = 0; i < *len; i++) {
+		putchar(buf[i] + 48);
 	}
-	return NULL;
+	putchar('\n');
+	U8* buf2crc;
+	if (not_forward) {
+		buf2crc = add_src_addr(add_dest_addr(add_ack_head(buf, *len, is_ack), dst, *len + 8), src, *len + 8 + 8);
+		set_ttl(buf2crc);
+		*len += 8 + 8 + 8;
+	}
+	else {
+		buf2crc = (U8*)malloc(*len);
+		memcpy(buf2crc, buf, *len);
+		decrease_ttl(buf2crc);
+	}
+	printf("buf2crc:\t");
+	for (int i = 0; i < *len; i++) {
+		putchar(buf2crc[i] + 48);
+	}
+	putchar('\n');
+	U8* buf2pack = append_crc16(buf2crc, *len);
+	*len += 16;
+	printf("buf2pack:\t");
+	for (int i = 0; i < *len; i++) {
+		putchar(buf2pack[i] + 48);
+	}
+	putchar('\n');
+	U8* bitframe = pack_frame(buf2pack, *len, len);
+	printf("frame:\t\t");
+	for (int i = 0; i < *len; i++) {
+		putchar(bitframe[i] + 48);
+	}
+	putchar('\n');
+	return bitframe;
 }
 
 //添加源 三个参数buf 源数组如source[9]="00000000"; 还有一个buf 长度 最后长度为len
@@ -256,7 +284,7 @@ U8* add_ack_head(U8* buf, int len, int ack_status) {
 		memset(rbuf, 0, 8);
 		if (ack_status) rbuf[7] = 1;	//是ACK帧
 		memcpy(rbuf + 8, buf, len);
-		free(buf);
+		//free(buf);
 	}
 	return rbuf;
 }
@@ -353,44 +381,51 @@ U8* pack_frame(U8* buf, int len, int* len_packed) //成帧 buf_memory_return为成帧
 	return buf_memory_return;
 }
 
-static void _send_and_wait_thread() {
+static void _send_and_wait_thread(void* ifNo) {
 	is_waiting = 1;
 	uint8_t cnt = 0;
 	do {
-		if (!(cnt--)) SendtoLower(prev_send_buf, prev_send_bufsz, 0);
-		Sleep(100);
+		if (!(cnt--)) SendtoLower(prev_send_buf, prev_send_bufsz, (int)ifNo);
+		Sleep(1);
 	} while (is_waiting);
 	puts("接收到ACK帧");
 }
 
-void send_and_wait(U8* bitframe, int len) {
+void send_and_wait(U8* bitframe, int len, int ifNo) {
 	if (!is_waiting) {
 		save_send_buf(bitframe, len);
 		free(bitframe);
-		_beginthread((_beginthread_proc_type)_send_and_wait_thread, 0, NULL);
+		_beginthread((_beginthread_proc_type)_send_and_wait_thread, 0, (int*)ifNo);
+	}
+	else {
+		puts("正在等待，拒绝发送");
+		free(bitframe);
 	}
 }
 
-void send_ack() {
+void send_ack(int ifNo) {
 	U8* buf = (U8*)malloc(8);
 	int len = 0;
-	U8* bitframe = pack_frame(buf, this_frame + 8, this_frame, &len, 1, 1);
-	SendtoLower(bitframe, len, 0);
+	U8* bitframe = pack_frame(buf, local_addr_src, this_frame, &len, 1, 1);
+	SendtoLower(bitframe, len, ifNo);
 	free(bitframe);
+	free(buf);
 	puts("发送ACK帧");
 }
 
 void auto_send() {
-	U8* dst = (U8*)"\1\1\1\1\1\1\1\1";		//模拟目的地址
-	U8* src = (U8*)"\1\0\1\0\1\0\1\0";		//模拟源地址
+	U8 c;
+	printf("输入欲发送到的主机号: ");
+	scanf_s("%d", &c);
+	U8* dst = (U8*)malloc(8);		//目的地址
+	ByteArrayToBitArray(dst, 8, &c, 1);
 	while (iWorkMode / 10) {
 		U8* buf = (U8*)malloc(16);		//模拟从高层来的数据
 		for (int i = 0; i < 16; i++) {
 			if (buf[i]) buf[i] = 1;
 		}
-		int len = 16;
-		U8* bitframe = pack_frame(buf, src, dst, &len, 1, 0);
-		send_and_wait(bitframe, len);
-		Sleep(1000);
+		send_to_dst_and_wait(dst, buf, 16);
+		free(buf);
+		Sleep(10000);
 	}
 }

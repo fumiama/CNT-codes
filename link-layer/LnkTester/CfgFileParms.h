@@ -60,6 +60,9 @@ public:
 		}
 
 	*/
+	int getLocalAddr() {
+		return myAddr;
+	}
 	CCfgFileParms();
 	CCfgFileParms(string devID, string layerID, string entID);
 
@@ -77,6 +80,8 @@ protected:
 	string upperPort;
 	string cmdAddr;
 	string cmdPort;
+
+	int myAddr;
 
 	void myStrcpy(char* str, string src);
 

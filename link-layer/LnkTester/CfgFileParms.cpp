@@ -105,6 +105,9 @@ void CCfgFileParms::printArray()
 	// TODO: 在此处添加实现代码.
 	for (i = 0; i < cfgParms.size(); i++) {
 		cout << cfgParms[i].name << " = " << cfgParms[i].strValue << endl;
+		if (cfgParms[i].name == "myAddr") {
+			myAddr = atoi(cfgParms[i].strValue.c_str());
+		}
 	}
 	return;
 }

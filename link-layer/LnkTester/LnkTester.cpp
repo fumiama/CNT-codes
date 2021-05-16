@@ -6,6 +6,7 @@
 #include <cstdio>
 #include "CfgFileParms.h"
 #include "function.h"
+#include "mac.h"
 #pragma comment (lib,"wsock32.lib")
 
 //以下是一些重要的与通信有关的控制参数，但是也可以不用管
@@ -74,8 +75,11 @@ int SendtoUpper(U8* buf, int len) {
 //输出：函数返回值是发送的数据量
 int SendtoLower(U8* buf, int len,int ifNo) {
 	int sendlen;
-	if (ifNo < 0 || ifNo >= lowerNumber) return 0;
-	printf("向低层发送%d位\n", len);
+	if (ifNo < 0 || ifNo >= lowerNumber) {
+		printf("非法端口%d\n", ifNo);
+		return 0;
+	}
+	printf("从端口%d向低层发送%d位\n", ifNo, len);
 	sendlen = sendto(sock, (char*)buf, len, 0, (sockaddr*) & (lower_addr[ifNo]), sizeof(sockaddr_in));
 	return sendlen;
 }
@@ -224,6 +228,7 @@ int main(int argc, char* argv[]) {
 	//取本层实体参数，并设置
 	local_addr = cfgParms.getUDPAddr(CCfgFileParms::LOCAL,0);
 	local_addr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	set_local_addr(cfgParms.getLocalAddr());
 	if (bind(sock, (sockaddr*)& local_addr, sizeof(sockaddr_in)) != 0) {
 		printf("参数错误\n");
 		return 0;
@@ -249,12 +254,12 @@ int main(int argc, char* argv[]) {
 	for (i = 0; i < lowerNumber; i++) {
 		lower_addr[i] = cfgParms.getUDPAddr(CCfgFileParms::LOWER, i);
 
-		//低层接口是Byte或者是bit,默认是字节流
+		//低层接口是Byte或者是bit,默认是bit流
 		strTmp = "lowerMode";
 		strTmp += std::to_string(i);
 		retval = cfgParms.getValueInt(lowerMode[i],(char*)"lowerMode");
 		if (0 > retval) {
-			lowerMode[i] = 1; //默认都是字节流
+			lowerMode[i] = 0; //默认都是bit流
 		}
 	}
 

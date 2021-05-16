@@ -152,12 +152,14 @@
     <ClCompile Include="function.cpp" />
     <ClCompile Include="lnklib.cpp" />
     <ClCompile Include="LnkTester.cpp" />
+    <ClCompile Include="mac.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CfgFileParms.h" />
     <ClInclude Include="function.h" />
     <ClInclude Include="lnklib.h" />
     <ClInclude Include="crc16.h" />
+    <ClInclude Include="mac.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
