@@ -45,6 +45,11 @@ void check_recv(U8* buf, int len, int ifNo) {
 			send_ack(ifNo);
 			free(this_frame);
 		}
+		else if (is_hello_package(this_frame)) {
+			puts("收到发给本机的HELLO包");
+			SendtoUpper(this_frame + 8 + 8 + 8, this_frame_size - 8 - 8 - 8);
+			free(this_frame);
+		}
 		else {	//转发
 			puts("转发帧");
 			send_ack(ifNo);
@@ -266,10 +271,7 @@ U8* add_src_addr(U8* buf, U8* source, int len) {
 U8* add_dest_addr(U8* buf, U8* destination, int len) {
 	int i = 0;
 	U8* buf_return = (U8*)malloc(sizeof(char) * len + 9);
-	for (i = 0; i < 8; i++) {
-		buf_return[i] = destination[i];
-		//printf_s("%c", buf_return[i]);
-	}
+	*(uint64_t*)buf_return = *(uint64_t*)destination;
 	for (i = 0; i < len; i++) {
 		buf_return[i + 8] = buf[i];
 		//printf_s("%c", buf_return[i + 8]);

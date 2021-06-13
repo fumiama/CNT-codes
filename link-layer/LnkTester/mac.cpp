@@ -74,6 +74,17 @@ void broadcast(U8* buf, int* len, int is_notificaton) {
 	//free(buf);
 }
 
+void hello(U8* buf, int* len) {
+	U8* dst = (U8*)"\0\0\0\0\0\0\0\0";
+	U8* oldbuf = buf;
+	buf = add_src_addr(add_dest_addr(add_ack_head(buf, *len, 0), dst, *len + 8), local_addr_src, *len + 8 + 8);
+	set_ttl(buf);
+	*len += 24;
+	free(oldbuf);
+	flood(buf, len, -1);
+	//free(buf);
+}
+
 int is_broadcast_frame(U8* frame_body) {
 	char* dst = (char*)frame_body + 8;
 	return strstr(dst, "\1\1\1\1\1\1\1\1") == dst;
@@ -135,4 +146,9 @@ int send_from_me(U8* frame_body) {
 int send_to_me(U8* frame_body) {
 	//printf("目的:%llu, 本机:%llu\n", *((uint64_t*)(frame_body + 8)), *((uint64_t*)local_addr_src));
 	return *((uint64_t*)(frame_body + 8)) == *((uint64_t*)local_addr_src);
+}
+
+int is_hello_package(U8* frame_body) {
+	printf("hello:%llu\n", *((uint64_t*)(frame_body + 8)));
+	return *((uint64_t*)(frame_body + 8)) == (uint64_t)0;
 }

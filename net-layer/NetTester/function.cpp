@@ -1,14 +1,16 @@
 //Nettester 的功能文件
 #include <iostream>
 #include <conio.h>
-#include "winsock.h"
+#include <winsock.h>
 #include <cstdio>
+#include <process.h>
 #include "CfgFileParms.h"
 #include "function.h"
-#include "lnklib.h"
-#include "mac.h"
-#include <process.h>
+#include "net.h"
+
 using namespace std;
+
+U8 sendbuf[MAX_BUFFER_SIZE];
 
 //以下为重要的变量
 int printCount = 0;	//打印控制
@@ -50,7 +52,7 @@ static void check_key() {
 //输出：
 void InitFunction() {
 	_beginthread((_beginthread_proc_type)check_key, 0, NULL);
-	notify_my_existance();
+	register_hello();
 }
 
 //***************重要函数提醒******************************
@@ -87,44 +89,35 @@ void TimeOut() {
 //         2)判断iWorkMode，看看是不是需要将发送的数据内容都打印，调试时可以，正式运行时不建议将内容全部打印。
 //输入：U8 * buf,高层传进来的数据， int len，数据长度，单位字节
 //输出：
-void RecvfromUpper(U8* buf, int len) {
-	if (!is_waiting) {
-		int iSndRetval = 0;
-		U8* bufSend = NULL;
-		//是高层数据，只从接口0发出去,高层接口默认都是字节流数据格式
-		//接口0的模式为bit数组，先转换成bit数组，放到bufSend里
-		bufSend = (U8*)malloc(len * 8);
-		if (bufSend == NULL) {
-			return;
-		}
-		iSndRetval = ByteArrayToBitArray(bufSend, len * 8, buf, len);
-		U8* next = (U8*)(bufSend + 16);		//下一跳地址
-		U8* src = (U8*)bufSend;		//源地址
-		//发送
-		if (buf[1] == 255) broadcast(bufSend, &iSndRetval, 0);
-		else if (buf[1] == 0) hello(bufSend, &iSndRetval);
-		else send_to_dst_and_wait(next, bufSend, iSndRetval);
-		//统计
-		if (iSndRetval <= 0) {
-			iSndErrorCount++;
-		}
-		else {
-			iSndTotal += iSndRetval;
-			iSndTotalCount++;
-		}
+void RecvfromUpper(U8* buf, int len)
+{
+	int iSndRetval;
+
+	//是高层数据，从接口0发出去
+	//高层的数据已经封装为了ip包
+	PACKAGE* package = (PACKAGE*)buf;
+	//接口0的模式为bit数组，先转换成bit数组
+	iSndRetval = ByteArrayToBitArray(sendbuf, MAX_BUFFER_SIZE, (U8*)package, len);
+	free(package);
+	//发送
+	iSndRetval = SendtoLower(sendbuf, iSndRetval, 0);
+	//sendto(sock, sendbuf, iSndRetval, 0, (sockaddr*) & (lower_addr[0]), sizeof(sockaddr_in));
+	if (iSndRetval <= 0) {
+		iSndErrorCount++;
+	}
+	else {
+		iSndTotal += iSndRetval;
+		iSndTotalCount++;
 	}
 	//printf("\n收到上层数据 %d 位，发送到接口0\n", retval * 8);
-	//打印
 	switch (iWorkMode % 10) {
 	case 1:
-		cout << endl << "高层要求向接口 0 发送数据：" << endl;
+		//打印收发数据
+		printf("\n共发送: %d 位, %d 次,转发 %d 位，%d 次;递交 %d 位，%d 次，发送错误 %d 次__________________________\n", iSndTotal, iSndTotalCount, iRcvForward, iRcvForwardCount, iRcvToUpper, iRcvToUpperCount, iSndErrorCount);
 		print_data_bit(buf, len, 1);
 		break;
-	case 2:
-		cout << endl << "高层要求向接口 0 发送数据：" << endl;
-		print_data_byte(buf, len, 1);
+	case 0:
 		break;
-	default: break;
 	}
 }
 //***************重要函数提醒******************************
@@ -138,15 +131,30 @@ void RecvfromUpper(U8* buf, int len) {
 //输入：U8 * buf,低层递交上来的数据， int len，数据长度，单位字节，int ifNo ，低层实体号码，用来区分是哪个低层
 //输出：
 void RecvfromLower(U8* buf, int len, int ifNo) {
-	check_recv(buf, len, ifNo);
+	int iSndRetval = 0;
+	//如果接口0是比特数组格式，先转换成字节数组，再向上递交
+	iSndRetval = BitArrayToByteArray(buf, len, sendbuf, MAX_BUFFER_SIZE);
+	printf("从LNK层收到%d比特/%d字节数据\n", len, iSndRetval);
+	char* data = unpack((PACKAGE*)sendbuf, &iSndRetval);
+	//是发给自己的包
+	if (data) {
+		iSndRetval = SendtoUpper((U8*)data, iSndRetval);
+		printf("向高层递交数据包%10s...\n", data);
+		//iSndRetval = sendto(sock, sendbuf, iSndRetval, 0, (sockaddr*) & (upper_addr), sizeof(sockaddr_in));
+		if (iSndRetval <= 0) {
+			iSndErrorCount++;
+		}
+		else {
+			iRcvToUpper += iSndRetval;
+			iRcvToUpperCount++;
+		}
+	}
 	//打印
-	cout << endl << "接收接口 " << ifNo << " 数据：" << endl;
 	switch (iWorkMode % 10) {
 	case 1:
+		//打印收发数据
+		printf("\n共发送: %d 位, %d 次,转发 %d 位，%d 次;递交 %d 位，%d 次，发送错误 %d 次__________________________\n", iSndTotal, iSndTotalCount, iRcvForward, iRcvForwardCount, iRcvToUpper, iRcvToUpperCount, iSndErrorCount);
 		print_data_bit(buf, len, lowerMode[ifNo]);
-		break;
-	case 2:
-		print_data_byte(buf, len, lowerMode[ifNo]);
 		break;
 	case 0:
 		break;

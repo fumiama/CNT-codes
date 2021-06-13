@@ -1,24 +1,22 @@
 // readfile.cpp : Defines the entry point for the console application.
 //
 //#include "stdafx.h"
+//#include "pch.h"
 #include <string>
 #include <fstream>
 #include <iostream>
 #include "cfgFileParms.h"
 //#include <iostream>
 using namespace std;
-
+//20200228£¬¼ò»¯ÅäÖÃÎÄ¼ş£¬
+//Ä¿±êÊÇUDP¶Ë¿ÚºÅ¶¼¸ù¾İÉè±¸ºÅºÍÊµÌåºÅ×Ô¶¯Éú³É£»¶Ë¿Ú²»ÄÜ¹¤×÷Ê±£¬±¨´í¡£Ò»¼üÆô¶¯Èí¼ş£¬ÏÈ¼ì²âËùÓĞ¶Ë¿ÚÊÇ·ñ¶¼ÄÜ¹¤×÷£¬
+//ÉÏÏÂ²ã¹ØÏµÓÉÒ»¸öÍ³Ò»µÄÇøÓòÃèÊö£¬Ò²ÊÇ×Ô¶¯Éú³É£»¸ù¾İÃèÊö×Ô¶¯Éú³É
+//ÍØÆËÁ¬½Ó¹ØÏµÓÉÒ»¸öÇøÓò¼ò»¯ÃèÊö£¬¸ù¾İÃèÊöÉú³ÉÁ¬½Ó¶Ô¶ËµÄĞÅÏ¢¡£×¢Òâ¹²ÏíĞÅµÀ£¬Ä¬ÈÏµÚÒ»¸öÃèÊöµÄÊµÌåÊÇ¹ÜÀí¶Ë¿Ú
+//Í³Ò»¹ÜÀíÒ²¹é¿Úµ½Êı¾İ¶Ë¿Ú£¬½ÓÊÕÃüÁîÓÉÔ´¶ËÅĞ¶Ï
+//ÆäËû²ÎÊı¼õÉÙÁË£¬²»ÔÙ·ÖBASICµÈ×é£¬Èç¹ûÒ»×éÓĞ¶à¸ö£¬±ÈÈçµÍ²ã½Ó¿ÚÄ£Ê½£¬ÓÃlowerMode0=£¬lowerMode1=À´±íÊ¾
 CCfgFileParms::CCfgFileParms()
 {
 	//³õÊ¼»¯
-	basic.parms = basic.number = 0;
-	basic.entryArray = NULL;
-	lower.parms = lower.number = 0;
-	lower.entryArray = NULL;
-	upper.number = upper.parms = 0;
-	upper.entryArray = NULL;
-	peer.number = peer.parms = 0;
-	peer.entryArray = NULL;
 
 	isConfigExist = false;
 
@@ -26,15 +24,6 @@ CCfgFileParms::CCfgFileParms()
 CCfgFileParms::CCfgFileParms(string devID, string layerID, string entID)
 {
 	//³õÊ¼»¯
-	basic.parms = basic.number = 0;
-	basic.entryArray = NULL;
-	lower.parms = lower.number = 0;
-	lower.entryArray = NULL;
-	upper.number = upper.parms = 0;
-	upper.entryArray = NULL;
-	peer.number = peer.parms = 0;
-	peer.entryArray = NULL;
-
 	isConfigExist = false;
 
 	deviceID = devID;
@@ -49,114 +38,75 @@ void CCfgFileParms::myStrcpy(char* str, string src) //Ö»±£ÁôASCIIÂë´óÓÚ32µÄ×Ö·û£
 	j = 0;
 	for (i = 0; i < strlen(src.c_str()); i++) {
 		if (src[i] > 32 || src[i] < 0) {
-			//ÖĞÎÄ×Ö·ûÒ²Òª¿¼ÂÇ
 			str[j] = src.c_str()[i];
 			j++;
 		}
 	}
 	str[j] = 0;
 }
-
-void* CCfgFileParms::getCfgParms(parms_set type)
+int CCfgFileParms::getValueInt(int& val, char* name)
 {
-	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
-	struct cfgParms* cfg;
-	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
-	switch (type) {
-	case parms_set::BASIC:
-		cfg = &(this->basic);
-		break;
-	case parms_set::LOWER:
-		cfg = &lower;
-		break;
-	case parms_set::UPPER:
-		cfg = &upper;
-		break;
-	case parms_set::PEER:
-		cfg = &peer;
-		break;
-	default:
-		return NULL;
-	}
-	return cfg;
-}
-int CCfgFileParms::getValueInt(int * dst,parms_set type, char* name, int index)
-{
-	int i;
-	string strTmp;
-	size_t retval;
-	int find;
-	struct cfgParms* cfg;
+	size_t i;
+	int retval;
 
-	*dst = 0;
-	cfg = (struct cfgParms*)getCfgParms(type);
-	if (cfg == NULL) {
-		return -1;
-	}
-	for (i = index * cfg->parms; i < cfg->number * cfg->parms; i++) {
-		strTmp = cfg->entryArray[i].name;
-		retval = strlen(strTmp.c_str());
-		if (retval < strlen(name))
-			continue;
-		find = (int)strTmp.find(name);
-		if (find >= 0) {
-			*dst = cfg->entryArray[i].value;
+	for (i = 0; i < cfgParms.size(); i++) {
+		retval = (int)cfgParms[i].name.find(name);
+		if (retval >= 0) {
+			val = cfgParms[i].value;
 			return 0;
 		}
 	}
 	return -1;
 }
-char* CCfgFileParms::getValueStr(parms_set type, char* name, int index)
+int CCfgFileParms::getValueInt(int& val, string name)
 {
-	int i;
-	string strTmp;
-	size_t retval;
-	int find;
-	struct cfgParms* cfg;
+	size_t i;
+	int retval;
 
-	cfg = (struct cfgParms*)getCfgParms(type);
-	if (cfg == NULL) {
-		return NULL;
-	}
-
-	for (i = index * cfg->parms; i < cfg->number * cfg->parms; i++) {
-		strTmp = cfg->entryArray[i].name;
-		retval = strlen(strTmp.c_str());
-		if (retval < strlen(name))
-			continue;
-		find = (int)strTmp.find(name);
-		if (find >= 0) {
-			return cfg->entryArray[i].cValue;
+	for (i = 0; i < cfgParms.size(); i++) {
+		retval = (int)cfgParms[i].name.find(name);
+		if (retval >= 0) {
+			val = cfgParms[i].value;
+			return 0;
 		}
 	}
-	return NULL;
+	return -1;
 }
-int CCfgFileParms::getNumber(parms_set type) //È¡µÃ²ÎÊı×éµÄÊıÁ¿£¬ÀıÈç¹²ÏíĞÅµÀÉÏÓĞ¶à¸ö¶Ô¶ËµØÖ·µÈ
+string CCfgFileParms::getValueStr(char* name)
 {
-	struct cfgParms* cfg;
+	size_t i;
+	int retval;
 
-	cfg = (struct cfgParms*)getCfgParms(type);
-	if (cfg == NULL) {
-		return 0;
+	for (i = 0; i < cfgParms.size(); i++) {
+		retval = (int)cfgParms[i].name.find(name);
+		if (retval >= 0) {
+			return cfgParms[i].strValue;
+		}
 	}
-	return cfg->number;
-
+	return string();
 }
+string CCfgFileParms::getValueStr(string name)
+{
+	size_t i;
+	int retval;
 
+	for (i = 0; i < cfgParms.size(); i++) {
+		retval = (int)cfgParms[i].name.find(name);
+		if (retval >= 0) {
+			return cfgParms[i].strValue;
+		}
+	}
+	return string();
+}
 //³É×é´òÓ¡
-void CCfgFileParms::printArray(parms_set type)
+void CCfgFileParms::printArray()
 {
-	struct cfgParms* cfg;
-	int i, j;
+	size_t i;
 	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
-	cfg = (struct cfgParms*)getCfgParms(type);
-	if (cfg == NULL) {
-		return;
-	}
-	for (i = 0; i < cfg->number; i++) {
-		cout << "  µÚ" << i << "×é" << endl;
-		for (j = 0; j < cfg->parms; j++) {
-			cout << cfg->entryArray[i * cfg->parms + j].name << " = " << cfg->entryArray[i * cfg->parms + j].cValue << endl;
+	for (i = 0; i < cfgParms.size(); i++) {
+		cout << cfgParms[i].name << " = " << cfgParms[i].strValue << endl;
+		if (cfgParms[i].name == "myAddr") {
+			myAddr = atoi(cfgParms[i].strValue.c_str());
 		}
 	}
 	return;
@@ -164,249 +114,982 @@ void CCfgFileParms::printArray(parms_set type)
 
 void CCfgFileParms::print()
 {
-	cout << "±¾²ã²ÎÊı×é" << endl;
-	printArray(parms_set::BASIC);
+	size_t i;
+	cout << "Éè±¸ºÅ: " << deviceID << " ²ã´Î: " << layer << "ÊµÌå: " << entityID << endl;
+	cout << "ÉÏ²ãÊµÌåµØÖ·: " << upperAddr << "  UDP¶Ë¿ÚºÅ; " << upperPort << endl;
+	cout << "±¾²ãÊµÌåµØÖ·: " << localAddr << "  UDP¶Ë¿ÚºÅ; " << localPort << endl;
+	if (layer.compare("PHY") == 0) {
+		if ((int)lowerAddr.size() <= 1) {
+			cout << "ÏÂ²ãµãµ½µãĞÅµÀ" << endl;
+			cout << "Á´Â·¶Ô¶ËµØÖ·: ";
+		}
+		else {
+			cout << "ÏÂ²ã¹ã²¥Ê½ĞÅµÀ" << endl;
+			cout << "¹²ÏíĞÅµÀÕ¾µã£º";
+		}
+	}
+	else {
+		cout << "ÏÂ²ãÊµÌå";
+	}
+	if ((int)lowerAddr.size() == 1) {
+		cout << "µØÖ·£º" << lowerAddr[0] << "  UDP¶Ë¿ÚºÅ; " << lowerPort[0] << endl;
+	}
+	else {
+		if (layer.compare("PHY") == 0) {
+			cout << endl;
+			for (i = 0; i < lowerAddr.size(); i++) {
+				cout << "        µØÖ·£º" << lowerAddr[i] << "  UDP¶Ë¿ÚºÅ; " << lowerPort[i] << endl;
+			}
+		}
+		else {
+			cout << endl;
+			for (i = 0; i < lowerAddr.size(); i++) {
+				cout << "        ½Ó¿Ú: " << i << " µØÖ·" << lowerAddr[i] << "  UDP¶Ë¿ÚºÅ; " << lowerPort[i] << endl;
+			}
+		}
+	}
+	cout << "Í³Ò»¹ÜÀíÆ½Ì¨µØÖ·: " << cmdAddr << "  UDP¶Ë¿ÚºÅ; " << cmdPort << endl;
+	cout << "##################" << endl;
+	printArray();
+	cout << "--------------------------------------------------------------------" << endl;
+	cout << endl;
 
-	cout << "ÏÂ²ã²ÎÊı×é" << endl;
-	printArray(parms_set::LOWER);
-
-	cout << "ÉÏ²ã²ÎÊı×é" << endl;
-	printArray(parms_set::UPPER);
-
-	cout << "¶ÔµÈÊµÌå²ÎÊı×é" << endl;
-	printArray(parms_set::PEER);
 }
-int CCfgFileParms::getAndCheckLine(ifstream& cfgFile, string& str)
+int CCfgFileParms::readArray()
 {
-	int x;
-	getline(cfgFile, str);
-	if (cfgFile.eof())
-		return -1;
-	x = (int)str.find("--------");
-	if (x >= 0)
-		return -2;
+	string* pstrTmp;
+	string strInt;
+	size_t i, j;
+	int pos;
+	struct parmEntry sParm;
+	int begin, end;
+	//Ã¿×éÓĞ¶àÉÙ¸ö²ÎÊı
+
+	for (i = 0; i < parmsSection.size(); i++) {
+		pstrTmp = parmsSection[i];
+		pos = (int)pstrTmp->find("=");
+		if (pos < 0) {
+			//²»ÊÇÕıÈ·µÄ²ÎÊıĞĞ£¬·ÅÆú
+			continue;
+		}
+		sParm.name = pstrTmp->substr(0, pos); //Ç°ÃæÓĞtab¼üºÍ¿Õ¸ñ²»¹ÜÁË£¬ÅĞ¶Ï±äÁ¿ÃûµÄÊ±ºòÓÃfind£¬²»ÓÃcompare
+		begin = max((int)sParm.name.find_first_not_of(' ', 0), (int)sParm.name.find_first_not_of(9, 0));
+		end = min((int)sParm.name.find_last_not_of(' '), (int)sParm.name.find_last_not_of(9));
+		sParm.name = sParm.name.substr(begin, end - begin + 1);
+		sParm.strValue = pstrTmp->substr(pos + 1);
+		sParm.value = atoi(sParm.strValue.c_str());
+		//¼ì²éÖ®Ç°ÓĞÃ»ÓĞÏàÍ¬µÄ²ÎÊı£¬ÓÃºóÃæµÄ¾Ö²¿²ÎÊıÌæ´úÖ®Ç°µÄÈ«¾Ö²ÎÊı
+		for (j = 0; j < cfgParms.size(); j++) {
+			if (sParm.name.compare(cfgParms[j].name) == 0) {
+				break;
+			}
+		}
+		if (j < cfgParms.size()) {
+			//Ö®Ç°ÓĞÈ«¾Ö²ÎÊı£¬Ìæ´úÆäÖµ
+			cfgParms[j].strValue = sParm.strValue;
+			cfgParms[j].value = sParm.value;
+		}
+		else {
+			//Ìí¼Ó½ø±í
+			cfgParms.push_back(sParm);
+		}
+	}
 	return 0;
 }
-int CCfgFileParms::readArray(parms_set type, ifstream& cfgFile)
+//ÔÚ½á¹¹×Ö´®ÖĞÕÒµ½Ö¸¶¨²ã´ÎÃûºÍÊµÌåºÅµÄ×Ö´®ÆğÊ¼Î»ÖÃ¡£·µ»ØÖµ-1£¬±íÊ¾±¾ĞĞÃ»ÕÒµ½ÊµÌå²ÎÊı
+int CCfgFileParms::findAddr(string* pStr, string* pLay, string* pEnt)
 {
-	struct cfgParms* cfg;
 	string strTmp;
-	string strInt;
-	int number, parms, i, j, pos;
+	int begin;
+
+	//±¾ĞĞÓ¦¸ÃÓĞ²ÎÊı£¨ÒòÎªÓĞ¿Õ¸ñ£©£¬Ã»ÓĞÉè±¸ºÅ£¬»òÕßÉè±¸ºÅÆ¥Åä
+	strTmp = pLay->c_str();
+	strTmp += pEnt->c_str();
+	begin = (int)pStr->find(strTmp, 0);
+	//·µ»ØÊµÌåºÅÔÚ²ÎÊı×Ö·û´®ÖĞµÄÎ»ÖÃ
+	return begin;
+}
+//»ñµÃÔÚ½á¹¹×Ö´®ÖĞ£¬Ö¸¶¨layerµÄ²ã´ÎºÅ£¬ÔÚ½á¹¹×Ö´®ÖĞ£¬Ã¿ĞĞÃ¿²ãÖ»ÓĞÒ»¸öÊµÌå¡£Í¬²ã¶à¸öÊµÌåÒª·ÖĞĞ±íÊ¾
+//Çó²ã´ÎµÄ±àºÅÒ²¾ÍÊÇ»ñµÃ²ã´ÎÎ»ÖÃ£¬²ã´ÎÖ®¼äÒÔ¿Õ¸ñ¼ä¸ô£¬Ã»ÓĞÉè±¸ºÅ£¬ÒªÒÔ¿Õ¸ñ¿ªÊ¼
+//·µ»ØÖµ1±íÊ¾×îµÍ²ã£¬-1±íÊ¾Ã»ÕÒµ½
+int CCfgFileParms::getLayerNo(string* pStr, string* lay)
+{
+	string strTmp;
+	int begin;
+	int end;
+	int i;
+	//ÅĞ¶ÏÉè±¸ºÅÇé¿ö,-2 ±íÊ¾Éè±¸ºÅ²»Æ¥Åä£¬Ã»ÓĞÉè±¸ºÅÔò¿É¼ÌĞø
+	begin = (int)pStr->find(' ');
+	if (begin == -1) {
+		//Õû¸ö×Ö·û´®Ã»ÓĞ¿Õ¸ñ£¬¸ñÊ½²»¶Ô,Ìø¹ı
+		return -1;
+	}
+	for (i = 1; begin < (int)pStr->length() && begin >= 0; i++) {
+		//´Óbegin¿ªÊ¼ÕÒµÚÒ»¸ö·Ç0µÄ×Ö¶Î,Ìø¹ıÏÂÒ»½×¶Î¿Õ¸ñ
+		begin = (int)pStr->find_first_not_of(' ', begin);
+		if (begin == -1) {
+			//Ìø¹ı¿Õ¸ñÖ®ºóÃ»¶«Î÷
+			break;
+		}
+		//½ØÈ¡×Ó²ÎÊı
+		strTmp = pStr->substr(begin, 3);
+		if ((int)strTmp.find(lay->c_str(), 0, 3) != -1) {
+			//ÕÒµ½ÎÒÃÇ×Ô¼ºµÄ²ã´ÎÁË
+			break;
+		}
+		end = (int)pStr->find_last_of(strTmp.c_str(), begin, 3);
+		begin = (int)pStr->find_first_of(' ', end);
+	}
+	if (begin < 0) {
+		//¸ø³öµÄ²ã´ÎÃû²»¶ÔÕÒ²»µ½
+		return -1;
+	}
+	return i;
+}
+//´Ó½ØÈ¡µÄÊµÌåÃèÊö×Ö´®µÄ@ºóÈ¡³öIPµØÖ·£¬Èç¹ûÃ»ÓĞ@£¬ÔòÄ¬ÈÏÎª»Ø»·µØÖ·
+string CCfgFileParms::getAddr(string* str)
+{
 	int retval;
-	string strNumber = "Number";
-	string strParms = "Parms";
-
+	string addr;
 	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
-	cfg = (struct cfgParms*)getCfgParms(type);
-	if (cfg == NULL) {
-		return -1;
+	retval = (int)str->find('@');
+	if (retval == -1) {
+		//Ê¹ÓÃÄ¬ÈÏ²ÎÊı
+		addr = "127.0.0.1";
 	}
+	else {
+		//È¡@ºóµÄIPµØÖ·
+		addr = str->substr(retval + 1);
+	}
+	return addr;
+}
+//ÒÔdev£¬²ã´ÎºÅ£¬ÊµÌåºÅÉú³ÉUDP¶Ë¿ÚºÅ£¬¸ñÊ½ÎªÊ®½øÖÆ£¬1 dev1 layer1 enty2
+string CCfgFileParms::getPort(string* dev, int iLayer, string* ent)
+{
+	string strTmp;
+	string strLayer;
+	//ÓÃÉè±¸ºÅ£¬²ã´Î£¬ÊµÌåºÅÉú³ÉÎ¨Ò»UDP¶Ë¿ÚºÅ
+	strTmp = "1";
+	strTmp += dev->c_str();
+	/*
+	if (layer.compare("PHY") == 0) {
+		strTmp += "1"; //²ã´ÎºÅ;
+	}
+	*/
+	strLayer = std::to_string(iLayer);//²ã´ÎºÅ;
+
+	strTmp += strLayer;
+
+	if (ent->length() == 1) {
+		//Ö»ÓĞ1Î»£¬²¹ÉÏ0
+		strTmp += "0";
+	}
+	strTmp += ent->c_str();
+
+	return strTmp;
+}
+//´Ó½ØÈ¡ºÃµÄÊµÌåÃèÊö×Ö¶ÎÖĞ£¬ÌáÈ¡ÊµÌåºÅ
+string CCfgFileParms::getEnt(string* str)
+{
+	string strEnt;
+	int retval;
+	int i;
+	//Òª´ÓstrÖĞÕÒ³öÊµÌåºÅ×Ö¶Î
+	retval = (int)str->find("@");
+	if (retval == -1) {
+		//Ã»ÓĞIPµØÖ·£¬×îºó1µ½Á½¸ö×Ö·ûÊÇÊı×Ö
+		strEnt = str->c_str();
+	}
+	else {
+		//È¡@Ö®Ç°
+		strEnt = str->substr(0, retval);
+	}
+	for (i = (int)strEnt.length() - 1; i >= 0; i--) {
+		if (strEnt.at(i) < '0' || strEnt.at(i) > '9')
+			break;
+	}
+	strEnt = strEnt.substr(i + 1, strEnt.length() - i - 1);
+
+	return strEnt;
+}
+//ÅĞ¶Ï±¾ĞĞÊÇ·ñÊÇ²ÎÊıĞĞ£¬ÒÀ¾İÊÇ¿ªÍ·µÄ#
+bool CCfgFileParms::isParmsLine(string* pstr)
+{
 	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	if (pstr->size() == 0) {
+		return false;
+	}
+	if (pstr->at(0) == '#' || isSplitLine(pstr)) {
+		return false;
+	}
+	return true;
+}
+//ÅĞ¶Ï±¾ĞĞÊÇ·ñÎª·Ö¸îĞĞ£¬ÒÀ¾İÊÇÁ¬ĞøµÄ----
+bool CCfgFileParms::isSplitLine(string* pstr)
+{
+	int retval;
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	retval = (int)pstr->find("--------");
+	if (retval < 0) {
+		return false;
+	}
+	return true;
+}
 
-	if (0 > getAndCheckLine(cfgFile, strTmp)) {
+//ÔÚ pstrÖĞ±È½ÏÉè±¸ºÅ¡£·µ»ØÖµ0£¬±íÊ¾Æ¥Åä£¬-1±íÊ¾pstrÖĞÃ»ÓĞÉè±¸ºÅ£¬1±íÊ¾pstrÓĞÉè±¸ºÅµ«ÊÇ²»Æ¥Åä
+int CCfgFileParms::compareDevID(string* pStr, string* dev)
+{
+	int end;
+	string strTmp;
+	//ÅĞ¶ÏÉè±¸ºÅÇé¿ö,-2 ±íÊ¾Éè±¸ºÅ²»Æ¥Åä£¬Ã»ÓĞÉè±¸ºÅÔò¿É¼ÌĞø
+	end = (int)pStr->find(' ');
+	if (end == -1) {
+		//Õû¸ö×Ö·û´®Ã»ÓĞ¿Õ¸ñ£¬¸ñÊ½²»¶Ô,Ìø¹ı
 		return -1;
 	}
-	//¶ÁÏàÓ¦µÄ×é£¬¾ÍËãÃ»ÓĞĞèÒª³É×éµÄ²ÎÊı£¬number=0ºÍparms=0Á½ĞĞ±ØĞëÓĞ
-	retval = (int)strTmp.find(strNumber);
-	if (retval == -1) {
+	else if (end == 0) {
+		//Ã»ÓĞÉè±¸ºÅ×Ö¶Î
 		return -1;
 	}
-
-	strInt = strTmp.substr(strTmp.find("=") + 1, strTmp.length() - strTmp.find("="));
-	//ÓĞ¶àÉÙ×é²ÎÊı
-	number = atoi(strInt.c_str());
-	cfg->number = number;
-
-	if (0 > getAndCheckLine(cfgFile, strTmp)) {
-		return -1;
+	if (end > 1) {
+		//Éè±¸ºÅ¹ı´ó£¬ÔİÊ±²»Ö§³Ö
+		return 1;
 	}
-
-	retval = (int)strTmp.find(strParms);
-	if (retval == -1) {
-		return -1;
+	//È¡ÏÂµÚÒ»¸ö×Ö¶ÎÅĞ¶ÏÉè±¸ºÅ
+	strTmp = pStr->substr(0, end);
+	if (strTmp.compare(dev->c_str()) != 0) {
+		return 1;
 	}
-	pos = (int)strTmp.find("=");
-	strInt = strTmp.substr(pos + 1, strTmp.length() - pos);
-	//Ã¿×éÓĞ¶àÉÙ¸ö²ÎÊı
-	parms = atoi(strInt.c_str());
-	cfg->parms = parms;
-	cfg->entryArray = (struct parmEntry*)malloc(sizeof(struct parmEntry) * number * parms);
-	//length = sizeof(struct parmEntry) * parms;
-	for (i = 0; i < number; i++) {
-		for (j = 0; j < parms; j++) {
-			if (0 > getAndCheckLine(cfgFile, strTmp)) {
-				return -1;
+	return 0;
+}
+// ´ÓÃèÊö×Ö´®ÖĞÌáÈ¡Éè±¸ºÅ£¬Èç¹û×Ö´®ÒÔ¿Õ¸ñ¿ªÊ¼£¬ÔòÌáÈ¡²»µ½¡£
+string CCfgFileParms::getDev(string* pstr)
+{
+	int retval;
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	retval = (int)pstr->find_first_of(" ");
+	if (retval <= 0) {
+		return string();
+	}
+	return pstr->substr(0, retval);
+}
+
+//ÓÃÖ¸¶¨Éè±¸£¬²ã´Î£¬ÊµÌåºÅµÄÃèÊöÏîÔÚsectionÖĞÕÒµ½ÊµÌåÃèÊö×Ó£¬»ñµÃÆäµØÖ·ºÍUDP¶Ë¿ÚºÅ
+//·µ»ØÖµ£ºĞ¡ÓÚ0±íÊ¾¸÷ÖÖ´íÎó£¬0±íÊ¾³É¹¦
+//Êä³ö£ºaddr£¬µØÖ·£¬port£¬UDP¶Ë¿ÚºÅ£¬indexOfDev£¬±¾Éè±¸ÃèÊöµÄÊ×ĞĞÎ»ÖÃ£¬indexOfThis£¬±¾ÊµÌåËùÔÚĞĞ£¬iLayNo±¾²ã²ã´Î±àºÅ
+int CCfgFileParms::getAddrFromSection(string* dev, string* lay, string* ent, string& addr, string& port, int& indexOfDev, int& indexOfThis, int& iLayNo)
+{
+	int deviceFind;
+	size_t index;
+	string* pstrTmp;
+	int retval;
+	int begin;
+	int end;
+	string strTmp;
+	// ´ÓarchSectionÇøÓò½«Ö¸¶¨Éè±¸£¬²ã´ÎºÍÊµÌåµÄµØÖ·ºÍUDP¶Ë¿ÚºÅÌáÈ¡³öÀ´
+	deviceFind = 0;
+	for (index = 0; index < archSection.size(); index++) {
+		pstrTmp = archSection[index];
+		//¼ì²éÉè±¸ºÅ
+		retval = compareDevID(pstrTmp, dev);
+		if (!deviceFind) {
+			if (retval != 0) {
+				continue;
 			}
-			pos = (int)strTmp.find("=");
-			cfg->entryArray[i * parms + j].name = (char*)malloc(pos + 1);
-			myStrcpy(cfg->entryArray[i * parms + j].name, strTmp.substr(0, pos).c_str());
-			cfg->entryArray[i * parms + j].cValue = (char*)malloc(strTmp.length() - pos + 1);
-			myStrcpy(cfg->entryArray[i * parms + j].cValue, strTmp.substr(pos + 1, strTmp.length() - pos).c_str());
-			cfg->entryArray[i * parms + j].value = atoi(cfg->entryArray[i * parms + j].cValue);
+			else {
+				deviceFind = 1;
+				indexOfDev = (int)index;
+			}
+		}
+		else {
+			if (retval == 1) {
+				break;
+			}
+		}
+		//Éè±¸ºÅÆ¥Åä£¬»òÕßÎ»ÓÚÉè±¸ºÅÆ¥ÅäµÄ·¶Î§ÄÚ£¬ÅĞ¶ÏÊµÌå²ÎÊıÊÇ·ñ´æÔÚ
+		begin = findAddr(pstrTmp, lay, ent);
+		if (begin == -1) {
+			//²»º¬Ö¸¶¨ÊµÌå²ÎÊı£¬¿´ÏÂÒ»Ìõ
+			continue;
+		}
+		//ÕÒµ½ÊµÌå£¬½ØÈ¡²ÎÊıÖµ
+		indexOfThis = (int)index;
+		end = (int)pstrTmp->find(' ', begin);
+		if (end == -1) {
+			strTmp = pstrTmp->substr(begin);
+		}
+		else {
+			end = end - begin;
+			strTmp = pstrTmp->substr(begin, end);
+		}
+		//´Ó²ÎÊıÖĞ»ñÈ¡IPµØÖ·£¬·ñÔòÓÃÄ¬ÈÏµÄ±¾µØ»Ø»·µØÖ·
+		addr = getAddr(&strTmp);
+		//Í¨¹ı²ã´ÎÃû¼ÆËã³ö²ã´ÎºÅ,1ÊÇµÚÒ»²ã
+		iLayNo = getLayerNo(pstrTmp, lay);
+		if (iLayNo < 1) {
+			//Ö¸¶¨µÄlayerÃûÔÚÅäÖÃÎÄ¼şÖĞÕÒ²»µ½
+			return -3;
+		}
+		//Éú³ÉUDP¶Ë¿ÚºÅ
+		port = getPort(dev, iLayNo, ent);
+		break;
+	}
+	if (index == archSection.size()) {
+		return -1;
+	}
+	return 0;
+}
+//¹¦ÄÜ£ºÔÚÖ¸¶¨µÄÃèÊöĞĞÖĞ£¬È¡µÃÄ³²ãÊµÌåµÄÉÏ²ãµØÖ·ĞÅÏ¢
+//      ·½·¨ÊÇ´Ó±¾ĞĞÕÒÉÏ²ã£¬Ã»ÓĞÔòÖğÌõÉÏÍÆÑ°ÕÒ£¬Ö±µ½×îÈ«µÄÉè±¸ĞĞ
+//ÊäÈë£ºÁ½¸öindex£¬indexOfDevÖ¸Ã÷¸ÄÉè±¸ÃèÊöÔÚsectionµÄÆğÊ¼Î»ÖÃ£¬indexOfThis±íÊ¾¸ÃËùÔÚµÄÃèÊöĞĞ£¬iLay±¾²ãµÄ²ã´Î±àºÅ£¬±ãÓÚ¶¨Î»ÉÏÏÂ²ã
+//·µ»ØÖµ£º-1±íÊ¾Ã»ÓĞ¸ü¸ß²ã£¬0±íÊ¾ÕÒµ½
+//Êä³ö£ºaddrÖĞÊä³öIPµØÖ·£¬portÊä³öUDP¶Ë¿ÚºÅ
+int CCfgFileParms::getUpperAddr(size_t indexOfDev, size_t indexOfThis, int iLay, string& addr, string& port)
+{
+	string* pstrTmp;
+	size_t index;
+	string strTmp;
+	string strEnt;
+	string strDev;
+	int begin;
+	int end;
+	int count;
+	//µÃµ½Éè±¸ºÅ
+	strDev = getDev(archSection[indexOfDev]);
+	for (index = indexOfThis; (int)index >= (int)indexOfDev; index--) {
+		pstrTmp = archSection[index];
+		//Ìø¹ıµÚÒ»¸ö¿Õ¸ñ¼ä¸ô¡£
+		begin = (int)pstrTmp->find_first_of(" ", 0);
+		begin = (int)pstrTmp->find_first_not_of(" ", begin);
+
+		end = begin;
+		count = 0;
+		while (end > 0) {
+			count++;
+			if (count == iLay + 1)
+				break;
+			end = (int)pstrTmp->find_first_of(" ", begin);
+			if (end == -1)
+				break;
+			begin = (int)pstrTmp->find_first_not_of(" ", end);
+			end = begin;
+		}
+		if (count < iLay + 1) {
+			//Ã»ÓĞÕÒµ½¸ß²ã
+			continue;
+		}
+		else {
+			//ÓĞ¸ß²ã£¬½ØÈ¡¸ß²ã×Ö¶Î
+			end = (int)pstrTmp->find_first_of(" ", begin);
+			if (end > 0) {
+				//ÓĞ¸ß²ã×Ö¶Î£¬½ØÈ¡
+				strTmp = pstrTmp->substr(begin, end - begin);
+			}
+			else {
+				strTmp = pstrTmp->substr(begin);
+			}
+			//»ñÈ¡¸ß²ã²ÎÊıÖµ
+			addr = getAddr(&strTmp);
+			strEnt = getEnt(&strTmp);
+			port = getPort(&strDev, iLay + 1, &strEnt);
+			//port = getPort(&strTmp, deviceID, iLayer + 1);
+			break;
+		}
+	}
+	if ((int)index < (int)indexOfDev) {
+		//Ã»ÕÒµ½
+		return -1;
+	}
+	return 0;
+}
+// ´ÓÁ´Â·×Ö´®µÄÉè¶¨·¶Î§ÄÚ£¬¸ù¾İ¶ººÅ£¬È¡³öÉè±¸ºÅºÍÊµÌåºÅ£¬start°üº¬ÔÚ·¶Î§ÄÚ£¬end²»°üº¬ÔÚ·¶Î§ÄÚ£¡
+int CCfgFileParms::getDevEntFromLink(string* pstr, int start, int end, string& dev, string& port)
+{
+	int com;
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	com = (int)pstr->find_first_of(",", start);
+	if (com == -1) {
+		return -6;//Á´Â·¸ñÊ½´íÎó£¬È±ÉÙ --
+	}
+	dev = pstr->substr(start, com - start);
+	port = pstr->substr(com + 1, end - com - 1);
+	return 0;
+}
+
+//¹¦ÄÜ£ºÔÚÖ¸¶¨µÄÃèÊöĞĞÖĞ£¬È¡µÃÄ³²ãÊµÌåµÄÏÂ²ãµØÖ·ĞÅÏ¢
+//      ·½·¨ÊÇ¾ÍÔÚ±¾ĞĞÕÒµÍ²ã£¬Î»ÓÚÇ°ÃæÒ»¸ö,Í¬Ê±»¹Òª×¢Òâ£¬ĞèÒª°Ñ±¾²ãÓĞ¹ØµÄµÍ²ã¶¼¶Á½øÀ´¡£
+//ÊäÈë£ºÁ½¸öindex£¬indexOfDevÖ¸Ã÷¸ÄÉè±¸ÃèÊöÔÚsectionµÄÆğÊ¼Î»ÖÃ£¬»ñÈ¡Éè±¸ºÅ£¬indexOfThis±íÊ¾¸ÃËùÔÚµÄÃèÊöĞĞ£¬iLay±¾²ãµÄ²ã´Î±àºÅ£¬±ãÓÚ¶¨Î»ÉÏÏÂ²ã
+//·µ»ØÖµ£º-1±íÊ¾Ã»ÓĞµÍ²ã£¬0±íÊ¾ÕÒµ½
+//Êä³ö£ºaddrÖĞÊä³öIPµØÖ·£¬portÊä³öUDP¶Ë¿ÚºÅ
+int CCfgFileParms::getLowerAddr(size_t indexOfDev, size_t indexOfThis, int iLay, vector<string>& addr, vector<string>& port)
+{
+	string* pstrTmp;
+	size_t index;
+	string strTmp;
+	string strEnt;
+	string strDev;
+	int begin;
+	int end;
+	int count;
+	int retval;
+
+	strDev = getDev(archSection[indexOfDev]);
+	//ÕÒµ½µÍ²ãÊµÌå²ÎÊı£¬
+	if (iLay > 1) {
+		//²»ÊÇ×îµÍ²ã£¬Ç°Ãæ²Å»áÓĞÊµÌå£¬Ö»È¡Ç°Ò»¸öÊµÌåµØÖ·Íâ£¬»¹ÒªÒÀ´ÎÏòÏÂÕÒÈ«Ïà¹ØÁªµÄËùÓĞµÍ²ãÊµÌå
+		strDev = getDev(archSection[indexOfDev]);
+		for (index = indexOfThis; index < archSection.size(); index++) {
+			pstrTmp = archSection[index];
+			//Éè±¸ºÅ²»Æ¥Åä¾ÍÖ±½ÓÌø³ö
+			retval = compareDevID(pstrTmp, &strDev);
+			if (retval == 1) {
+				return 0;
+			}
+			//Ìø¹ıµÚÒ»¸ö¿Õ¸ñ¼ä¸ô¡£
+			begin = (int)pstrTmp->find_first_of(" ", 0);
+			begin = (int)pstrTmp->find_first_not_of(" ", begin);
+
+			end = begin;
+			count = 0;
+			while (end > 0) {
+				count++;
+				if (count == iLay - 1)
+					break;
+				end = (int)pstrTmp->find_first_of(" ", begin);
+				if (end == -1)
+					break;
+				begin = (int)pstrTmp->find_first_not_of(" ", end);
+				end = begin;
+			}
+			if (count < iLay - 1) {
+				//µÍ²ã²»¹»ÊıÁ¿£¬¼ÌĞø
+				continue;
+			}
+			else {
+				//ÓĞµÍ²ã£¬µ«ÊÇ»¹Òª¿´Í¬²ãÊÇ·ñÓĞ£¬Èç¹ûÍ¬²ãÇÒ£¬²»Ò»ÑùµÄ£¬Ôò½áÊøÑ°ÕÒ
+				if (index != indexOfThis) {
+					//»»ĞĞÁË
+					end = (int)pstrTmp->find_first_of(" ", begin);
+					if (end > 0) {
+						end = (int)pstrTmp->find_first_not_of(" ", end);
+						if (end > 0) {
+							//ÓĞÍ¬²ã£¬½áÊø
+							return 0;
+						}
+					}
+				}
+			}
+			//ÓĞºÏÊÊµÍ²ã£¬½ØÈ¡×Ö¶Î
+			end = (int)pstrTmp->find_first_of(" ", begin);
+			if (end > 0) {
+				//ÓĞµÍ²ã×Ö¶Î£¬½ØÈ¡
+				strTmp = pstrTmp->substr(begin, end - begin);
+			}
+			else {
+				strTmp = pstrTmp->substr(begin);
+			}
+			//»ñÈ¡µÍ²ã²ÎÊıÖµ
+			addr.push_back(getAddr(&strTmp));
+			strEnt = getEnt(&strTmp);
+			port.push_back(getPort(&strDev, iLay - 1, &strEnt));
 		}
 
 	}
+	else {
+		int mybegin;
+		string strAddrTmp;
+		string strPortTmp;
+		string strPeerDev;
+		string strPeerEnt;//layerÒ»¶¨ÊÇÎïÀí²ã
+		int x, y, z;
+		//±¾²ãÊÇÎïÀí²ãÊµÌå£¬´ÓÁ´Â·ÕÒµ½¶Ô¶ËµØÖ·
+		strTmp = deviceID;//getDev(archSection[indexOfDev]);
+		strTmp += ",";
+		strTmp += entityID; //Ö±½ÓÀ´ÁË¹ş£¬±¾À´Ó¦¸Ã´ÓLayerÊıµ½£¬È»ºóÈ¡µÃ£¬Ì«Âé·³
+
+
+		for (index = 0; index < linksSection.size(); index++) {
+			pstrTmp = linksSection[index];
+			mybegin = (int)pstrTmp->find(strTmp);
+			if (mybegin == -1) {
+				continue;
+			}
+			//ÕÒµ½°üº¬±¾ÊµÌåµÄÁ´Â·ÃèÊö£¬ÓĞÇÒ½öÓĞÒ»ĞĞ
+			//Ò»¶ÎÒ»¶ÎÇĞ³öÀ´£¬ÕÒµ½¶Ô¶ËµØÖ·£¬´æ·Å
+			begin = 0;
+			end = 0;
+			end = (int)pstrTmp->find("--", begin);
+			while (begin < (int)pstrTmp->length()) {
+				if (begin != mybegin) {
+					//È¡µÃ¶ÔµÈÊµÌåÉè±¸ºÅºÍÊµÌåºÅ
+					retval = getDevEntFromLink(pstrTmp, begin, end, strPeerDev, strPeerEnt);
+					if (retval < 0) {
+						return retval;
+					}
+					//ÔÚarchSectionÖĞ°´Éè±¸ºÅ£¬²ã´ÎÃû£¬ÊµÌåºÅ£¬È¡³öµØÖ·
+					retval = getAddrFromSection(&strPeerDev, &layer, &strPeerEnt, strAddrTmp, strPortTmp, x, y, z);
+					if (retval < 0) {
+						return -7;
+					}
+					lowerAddr.push_back(strAddrTmp);
+					lowerPort.push_back(strPortTmp);
+				}
+				//È·¶¨ÏÂÒ»¸ö×Ö¶ÎµÄÎ»ÖÃ
+				begin = end + 2;
+				end = (int)pstrTmp->find("--", begin);
+				if (end == -1)
+					end = (int)pstrTmp->length();
+			}
+			break;
+		}
+		if (index >= linksSection.size()) {
+			//Ã»ÕÒµ½£¬ÍøÔªÎŞ·¨½ÓÈëÍøÂç
+			return -5;
+		}
+	}
 	return 0;
 }
 
+//-1£ºÅäÖÃÎÄ¼ş²»´æÔÚ£¬-2£ºÅäÖÃÎÄ¼şÖĞÃ»ÓĞÓĞĞ§²ÎÊıĞĞ;-3 ÔÚ¸ÃÉè±¸µÄ½á¹¹ÃèÊöĞĞÖĞÃ»ÕÒµ½Ö¸¶¨ÊµÌå
+//-4: ½á¹¹²ÎÊıÖĞ£¬²»Ó¦¸ÃÊÇ×îµÍ²ãµÄÇ°ÃæÃ»ÓĞµÍ²ãÊµÌå²ÎÊı£»-5£ºÁ´Â·ÇøÓòÕÒ²»µ½±¾ÊµÌå
+//-6£ºÁ´Â·ÃèÊöĞĞ¸ñÊ½ÓĞ´í£¬Ã»ÕÒµ½--,-7£ºÁ´Â·²ã¶Ô¶ËÃ»ÓĞÔÚ½á¹¹ÇøÓòÖĞÃèÊö
+//-8: ÍØÆËÖĞÉÙÓÚÁ½¸ö½Úµã
 int CCfgFileParms::read()
 {
 	string strTmp;
-	string strInt;
+	string strTmp2;
+	string* pstrTmp; //Ã¿Ò»ĞĞ×Ö´®Ö¸Õë
+	//string strInt;
+	bool isStart = false;
 	int deviceFind = 0;
 	int layerFind = 0;
 	int entityFind = 0;
 	int retval;
+	size_t index = 0;
+	int iLayer;
+	int indexDev;
+	int indexThis;
+	struct parmEntry sParmEntry;
 
 	ifstream cfgFile("ne.txt");
 
 	if (!cfgFile.is_open())
 	{
 		isConfigExist = false;
-		return 0;
+		return -1;
 	}
-	//Í¨¹ıÉè±¸ºÅ£¬²ã´ÎÃû£¬ºÍÊµÌåºÅ£¬µÃµ½ËÄ¸ö²ÎÊı×é:basic, lower , upper£¬peer
+
+	//×ö¸öÄÚÈİÇåÁã²Ù×÷
+	cleanSections();
+	cfgParms.clear();
+	//½«ÎÄ¼şÄÚÈİ·ÖÇøÈ«²¿¶Á³ö
+	//ÏÈÌø¹ıµÚÒ»¸ö·ÖÇøÏßÖ®Ç°µÄ
+	while (!cfgFile.eof()) {
+		getline(cfgFile, strTmp);
+		if (isSplitLine(&strTmp)) {
+			break;
+		}
+	}
+	if (cfgFile.eof()) {
+		//Ã»ÓĞ¶Áµ½ÓĞĞ§ÄÚÈİ
+		isConfigExist = 0;
+		cfgFile.close();
+		return -2;
+	}
+	//¶ÁÈë¼Ü¹¹ºÍµØÖ·ÇøÓòÄÚÈİ
+	while (!cfgFile.eof()) {
+		getline(cfgFile, strTmp);
+		if (isSplitLine(&strTmp)) {
+			break;
+		}
+		if (!isParmsLine(&strTmp)) {
+			continue;
+		}
+		pstrTmp = new string(strTmp.c_str());
+		archSection.push_back(pstrTmp);
+	}
+	//¶ÁÈëÁ´Â·ÇøÓòÄÚÈİ
+	while (!cfgFile.eof()) {
+		getline(cfgFile, strTmp);
+		if (isSplitLine(&strTmp)) {
+			break;
+		}
+		if (!isParmsLine(&strTmp)) {
+			continue;
+		}
+		pstrTmp = new string(strTmp.c_str());
+		linksSection.push_back(pstrTmp);
+	}
+	//¶ÁÈëÍ³Ò»Æ½Ì¨ÇøÓòÄÚÈİ
+	while (!cfgFile.eof()) {
+		getline(cfgFile, strTmp);
+		if (isSplitLine(&strTmp)) {
+			break;
+		}
+		if (!isParmsLine(&strTmp)) {
+			continue;
+		}
+		retval = (int)strTmp.find("cmdIpAddr");
+		if (retval >= 0) {
+			cmdAddr = strTmp.substr(strTmp.find("=") + 1);
+		}
+		else {
+			retval = (int)strTmp.find("cmdPort");
+			if (retval >= 0) {
+				cmdPort = strTmp.substr((int)strTmp.find("=") + 1);
+			}
+			else {
+				//È«¾Ö²ÎÊı£¬´æÈë²ÎÊı±í
+				pstrTmp = new string(strTmp.c_str());
+				parmsSection.push_back(pstrTmp);
+			}
+		}
+	}
+	//¶ÁÈëÆäËû²ÎÊıÇøÓòÄÚÈİ£¬Ö»¶Á±¾ÊµÌåÓĞ¹Ø²ÎÊı
 	deviceFind = 0;
-	while ((!cfgFile.eof()) && (!deviceFind)) {
-		getline(cfgFile, strTmp);
-		//cfgFile >> strTmp;
-		retval = (int)strTmp.find("deviceID");
-		if (retval == -1) {
-			continue;
-		}
-		retval = (int)strTmp.find(deviceID);
-		if (retval == -1) {
-			continue;
-		}
-		//ÕÒµ½Éè±¸
-		deviceFind = 1;
-		break;
-	}
-	if (cfgFile.eof() || deviceFind == 0) {
-		cfgFile.close();
-		return -1;
-	}
 	layerFind = 0;
-	while ((!cfgFile.eof()) && (!layerFind)) {
-		getline(cfgFile, strTmp);
-		retval = (int)strTmp.find("deviceID");
-		if (retval >= 0) {//¶¼ÕÒµ½ÏÂÒ»¸öÉè±¸È¥ÁË£¬Í£Ö¹
-			break;
-		}
-		retval = (int)strTmp.find("layer");
-		if (retval == -1) {
-			//getline(cfgFile,strTmp);
-			continue;
-		}
-		retval = (int)strTmp.find(layer);
-		if (retval == -1) {
-			//getline(cfgFile,strTmp);
-			continue;
-		}
-		layerFind = 1;
-		break;
-	}
-	if (cfgFile.eof() || layerFind == 0) {
-		cfgFile.close();
-		return -1;
-	}
 	entityFind = 0;
-	while ((!cfgFile.eof()) && (!entityFind)) {
+	while (!cfgFile.eof()) {
 		getline(cfgFile, strTmp);
-		retval = (int)strTmp.find("layer");
-		if (retval >= 0) {//¶¼ÕÒµ½ÏÂÒ»²ã£¬Í£Ö¹
-			break;
-		}
-		retval = (int)strTmp.find("deviceID");
-		if (retval >= 0) {//¶¼ÕÒµ½ÏÂÒ»¸öÉè±¸ÁË£¬Í£Ö¹
-			break;
-		}
-		retval = (int)strTmp.find("entityID");
-		if (retval == -1) {
-			//getline(cfgFile,strTmp);
+		if (!isParmsLine(&strTmp)) {
 			continue;
 		}
-		retval = (int)strTmp.find(entityID);
-		if (retval == -1) {
-			//getline(cfgFile,strTmp);
+		if (isSplitLine(&strTmp)) {
+			//·Ö¸îÏß£¬¿´×´Ì¬
+			if (entityFind) {
+				//¸Ã½áÊøÁË
+				break;
+			}
+		}
+		//´ÓdeviceID¿ªÊ¼
+		if (!deviceFind) {
+			retval = (int)strTmp.find("deviceID");
+			if (retval == -1) {
+				continue;
+			}
+			retval = (int)strTmp.find(deviceID);
+			if (retval == -1) {
+				continue;
+			}
+			//ÕÒµ½Éè±¸
+			deviceFind = 1;
 			continue;
 		}
+		else {
+			retval = (int)strTmp.find("deviceID");
+			if (retval >= 0) {
+				//ÔÚÒÑ¾­·¢ÏÖ¹ıdeviceIDµÄÇé¿öÏÂ£¬ÓÖ¶Áµ½deviceIDĞĞ£¬ÕâÊÇĞÂµÄdeviceIDÁË£¬ÍË³ö
+				break;
+			}
+		}
+		if (!layerFind) {
+			retval = (int)strTmp.find("layer");
+			if (retval == -1) {
+				continue;
+			}
+			retval = (int)strTmp.find(layer);
+			if (retval == -1) {
+				continue;
+			}
+			//ÕÒµ½²ã´Î
+			layerFind = 1;
+			continue;
+		}
+		else {
+			retval = (int)strTmp.find("layer");
+			if (retval >= 0) {
+				//ÔÚÒÑ¾­·¢ÏÖ¹ılayerµÄÇé¿öÏÂ£¬ÓÖ¶Áµ½layerĞĞ£¬ÕâÊÇĞÂµÄlayerÁË£¬ÍË³ö
+				break;
+			}
 
-		//ÕÒµ½ÊµÌå
-		entityFind = 1;
-		break;
-	}
+		}
+		if (!entityFind) {
+			retval = (int)strTmp.find("entityID");
+			if (retval == -1) {
+				continue;
+			}
+			retval = (int)strTmp.find(entityID);
+			if (retval == -1) {
+				continue;
+			}
+			//ÕÒµ½ÊµÌå
+			entityFind = 1;
+			continue;
+		}
+		else {
+			retval = (int)strTmp.find("entityID");
+			if (retval >= 0 || isSplitLine(&strTmp)) {
+				//ÔÚÒÑ¾­·¢ÏÖ¹ıentieyIDµÄÇé¿öÏÂ£¬ÓÖ¶Áµ½entieyIDĞĞ»òÕß·Ö¸îĞĞ£¬ÕâÊÇĞÂµÄentieyIDÁË£¬ÍË³ö
+				break;
+			}
 
-	if (cfgFile.eof() || entityFind == 0) {
-		cfgFile.close();
-		return -1;
-	}
-	//¶Á³öbasic²ÎÊı×é
-	retval = readArray(parms_set::BASIC, cfgFile);
-	if (retval == -1) {
-		cfgFile.close();
-		return -1;
-	}
+		}
 
-	//¶Álowerparm×é£¬¾ÍËãÃ»ÓĞĞèÒª³É×éµÄ²ÎÊı£¬number=0ºÍparms=0Á½ĞĞ±ØĞëÓĞ
-	retval = readArray(parms_set::LOWER, cfgFile);
-	if (retval == -1) {
-		cfgFile.close();
-		return -1;
-	}
-
-	//¶Áupperparm×é
-	retval = readArray(parms_set::UPPER, cfgFile);
-	if (retval == -1) {
-		cfgFile.close();
-		return -1;
-	}
-	//¶Ápeerparm×é
-	retval = readArray(parms_set::PEER, cfgFile);
-	if (retval == -1) {
-		cfgFile.close();
-		return -1;
+		//·ÅÈë²ÎÊı±í£¬
+		pstrTmp = new string(strTmp.c_str());
+		parmsSection.push_back(pstrTmp);
 	}
 
 	cfgFile.close();
 
-	if (deviceFind == 1 && layerFind == 1 && entityFind == 1)
-		isConfigExist = true;
+	//ÔÚ¼Ü¹¹ÇøÓòÖĞÕÒµ½±¾ÊµÌåµÄIPµØÖ·ºÍUDP¶Ë¿ÚºÅ×Ö´®
+	retval = getAddrFromSection(&deviceID, &layer, &entityID, localAddr, localPort, indexDev, indexThis, iLayer);
+	if (retval < 0) {
+		isConfigExist = false;
+		return retval;
+	}
+	//»ñµÃµÍ²ãµØÖ·
+	retval = getLowerAddr(indexDev, indexThis, iLayer, lowerAddr, lowerPort);
+	if (retval < 0) {
+		//²»ÄÜÃ»ÓĞµÍ²ã£¬PHYµÄµÍ²ã¾ÍÊÇÁ´Â·¶Ô¶Ë
+		return retval;
+	}
+	//»ñµÃ¸ß²ãµØÖ·
+	retval = getUpperAddr(indexDev, indexThis, iLayer, upperAddr, upperPort);
+
+	//ÅĞ¶ÏÓĞ¶àÉÙ¸öÍøÔª£¬ÒÔ»ñµÃ²¼¾Ölayout,¹¹ÔìÓÃ²ÎÊıµÄĞÎÊ½·ÅÈëµ½²ÎÊı±íÖĞ
+	strTmp = "z"; //±È½ÏÉè±¸ºÅÊ±²»Æ¥Åä
+
+	sParmEntry.value = 0;
+	for (index = 0; index < archSection.size(); index++) {
+		pstrTmp = archSection[index];
+		retval = compareDevID(pstrTmp, &strTmp);
+		if (retval == 1) {
+			sParmEntry.value++;
+		}
+	}
+	if (sParmEntry.value >= 2) {
+		sParmEntry.name = "layOut";
+		sParmEntry.strValue = std::to_string(sParmEntry.value);
+	}
+	else {
+		return -8;
+	}
+
+	cfgParms.push_back(sParmEntry);
+
+	//ÕûÀíÆäËû²ÎÊı¼¯ºÏ£¬²ğ·Ö³É±äÁ¿ÃûºÍ±äÁ¿Öµ½á¹¹
+	readArray();
+
+	isConfigExist = true;
 
 	return 0;
 }
 
-void CCfgFileParms::freeArray(parms_set type)
+int CCfgFileParms::cleanSections()
 {
-	int i;
-	struct cfgParms* cfg;
+	string* pstrTmp;
 	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
-	cfg = (struct cfgParms*)getCfgParms(type);
-	if (cfg == NULL) {
-		return;
+	while (!archSection.empty()) {
+		pstrTmp = archSection[archSection.size() - 1];
+		archSection.pop_back();  //×îÎ²°Íµ¯³ö
+		delete pstrTmp;
+	}
+	while (!linksSection.empty()) {
+		pstrTmp = linksSection[linksSection.size() - 1];
+		linksSection.pop_back();
+		delete pstrTmp;
+	}
+	while (!parmsSection.empty()) {
+		pstrTmp = parmsSection[parmsSection.size() - 1];
+		parmsSection.pop_back();
+		delete pstrTmp;
 	}
 
-	for (i = 0; i < cfg->number * cfg->parms; i++) {
-		free(cfg->entryArray[i].name);
-		free(cfg->entryArray[i].cValue);
-	}
-	cfg->number = 0;
-	cfg->parms = 0;
-	if (cfg->entryArray != NULL) {
-		free(cfg->entryArray);
-		cfg->entryArray = NULL;
-	}
+	return 0;
 }
+
 CCfgFileParms::~CCfgFileParms()
 {
+	//ÊÍ·ÅÎÄ¼şÄÚÈİ
+	cleanSections();
 
-	//basic×é
-	freeArray(BASIC);
-	//lower×é
-	freeArray(LOWER);
-	//upper×é
-	freeArray(UPPER);
-	//upper×é
-	freeArray(PEER);
+}
+//¸ù¾İÉè±¸ºÅ£¬²ã´ÎºÅ£¬ÊµÌåºÅ£¬°´16½øÖÆ¸ñÊ½Éú³ÉUDP¶Ë¿ÚºÅ,×÷Îª·µ»ØÖµ£¬
+//¹æÔò:×î¸ßÎ»Îª0£¬´Î¸ßÎ»Îª1£¬×î×óÎªbit0£¬b0~b3¡ª¡ªÀàĞÍ£¬b4~b7¡ª¡ªÉè±¸ºÅ£¬b8~b11¡ª¡ª²ã´ÎºÅ£¬b12~b15¡ª¡ªÊµÌåºÅ
+unsigned short CCfgFileParms::createHexPort(int inID, int inLayer, int inEntity, int inType)
+{
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	unsigned short port;
+	port = 0;
+	//×é×°ÊµÌåºÅ
+	port = (inEntity & 0xf) | port;
+	//×é×°²ã´ÎºÅ
+	port = ((inLayer & 0xf) << 4) | port;
+	//×é×°Éè±¸ºÅ
+	port = ((inID & 0xf) << 8) | port;
+	//×é×°ÀàĞÍºÅ£¬typeÖ»ÓĞÁ½ÖÖ£¬ÆÕÍ¨Îª0£¬ÃüÁîÎª1
+	port = ((inType & 0xf) << 12) | port;
+	//×î¸ßÎ»ÉèÎ»0£¬´Î¸ßÎ»ÉèÎª1
+	port = (port & 0x3fff) | 0x4000;
+
+	return port;
+}
+//»ñµÃÖ¸¶¨typeµÄÌ×½Ó×ÖµØÖ·
+//ÊäÈë£ºtype£¬ -1±íÊ¾µÍ²ã£¬0±íÊ¾±¾²ã£¬1±íÊ¾¸ß²ã
+sockaddr_in CCfgFileParms::getUDPAddr(AddrType type, int index)
+{
+	sockaddr_in addr;
+	addr.sin_family = 0;
+	addr.sin_addr.S_un.S_addr = 0;
+	addr.sin_port = 0;
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	switch (type) {
+	case LOWER:
+		if (lowerAddr.size() == 0 || index >= (int)lowerAddr.size()) {
+			break;
+		}
+		addr.sin_family = AF_INET;
+		addr.sin_addr.S_un.S_addr = myInetAddr2n(&(lowerAddr[index]));
+		addr.sin_port = htons(atoi(lowerPort[index].c_str()));
+		break;
+	case LOCAL:
+		addr.sin_family = AF_INET;
+		addr.sin_addr.S_un.S_addr = myInetAddr2n(&localAddr);
+		addr.sin_port = htons(atoi(localPort.c_str()));
+
+		break;
+	case UPPER:
+		addr.sin_family = AF_INET;
+		addr.sin_addr.S_un.S_addr = myInetAddr2n(&upperAddr);
+		addr.sin_port = htons(atoi(upperPort.c_str()));
+		break;
+	case CMDER:
+		addr.sin_family = AF_INET;
+		addr.sin_addr.S_un.S_addr = myInetAddr2n(&cmdAddr);
+		addr.sin_port = htons(atoi(cmdPort.c_str()));
+		break;
+	}
+	return addr;
+}
+string CCfgFileParms::getUDPAddrString(AddrType type, int index)
+{
+	string strTmp;
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	switch (type) {
+	case LOWER:
+		if (lowerAddr.size() == 0 || index >= (int)lowerAddr.size()) {
+			break;
+		}
+		strTmp = lowerAddr[index].c_str();
+		strTmp += ":";
+		strTmp += lowerPort[index].c_str();
+		break;
+	case LOCAL:
+		strTmp = localAddr.c_str();
+		strTmp += ":";
+		strTmp += localAddr.c_str();
+		break;
+	case UPPER:
+		strTmp = upperAddr.c_str();
+		strTmp += ":";
+		strTmp += upperPort.c_str();
+		break;
+	}
+	return strTmp;
+}
+//»ñµÃÒ»×éµØÖ·µÄÊıÁ¿£¬Ö÷ÒªÊÇµÍ²ã½Ó¿ÚµÄÊıÁ¿£¬
+//ÊäÈë£ºtype£¬ -1±íÊ¾µÍ²ã£¬0±íÊ¾±¾²ã£¬1±íÊ¾¸ß²ã
+int CCfgFileParms::getUDPAddrNumber(AddrType type)
+{
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	switch (type) {
+	case LOWER:
+		return (int)lowerAddr.size();
+	}
+	return 1;
+}
+//×Ô±àµÄIPµØÖ·×Ö·û´®×ª»»ÎªÍøÂç×Ö½ÚĞòÕûÊıĞÎÊ½
+unsigned long CCfgFileParms::myInetAddr2n(string* pstr)
+{
+	int begin;
+	int end;
+	unsigned long retval;
+	unsigned long temp;
+	string strTmp;
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	retval = 0;
+	begin = (int)pstr->find_first_of(".");
+	if (begin < 0)
+		return 0;
+	strTmp = pstr->substr(0, begin);
+	temp = atoi(strTmp.c_str());
+	retval = (temp << 24) & 0xff000000;
+
+	begin = begin + 1;
+	end = (int)pstr->find_first_of(".", begin);
+	if (end < 0) {
+		return 0;
+	}
+	strTmp = pstr->substr(begin, end - begin);
+	temp = atoi(strTmp.c_str());
+	retval += (temp << 16) & 0x00ff0000;
+
+	begin = end + 1;
+	end = (int)pstr->find_first_of(".", begin);
+	if (end < 0) {
+		return 0;
+	}
+	strTmp = pstr->substr(begin, end - begin);
+	temp = atoi(strTmp.c_str());
+	retval += (temp << 8) & 0x0000ff00;
+
+	begin = end + 1;
+	strTmp = pstr->substr(begin);
+	temp = atoi(strTmp.c_str());
+	retval += temp & 0x000000ff;
+
+	return htonl(retval);
+}
+
+//»ñµÃÁ´Â·ÔÚÍØÆËÎÄ¼şÖĞµÄ±àºÅ£¬ÓÃÀ´Í³Ò»µ÷ÕûÑÕÉ«£¬ÏàÍ¬Á´Â·ÉÏµÄ½çÃæ¶¼ÊÇÒ»¸öÑÕÉ«
+//½öÎïÀí²ãÊ¹ÓÃ
+int CCfgFileParms::getLinkIndex()
+{
+	string strTmp;
+	string* pstrTmp;
+	size_t index;
+	int retval;
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	if (layer.compare("PHY") != 0) {
+		return -1;
+	}
+	//±¾²ãÊÇÎïÀí²ãÊµÌå£¬´ÓÁ´Â·ÕÒµ½¶Ô¶ËµØÖ·
+	strTmp = deviceID;//getDev(archSection[indexOfDev]);
+	strTmp += ",";
+	strTmp += entityID; //Ö±½ÓÀ´ÁË¹ş£¬±¾À´Ó¦¸Ã´ÓLayerÊıµ½£¬È»ºóÈ¡µÃ£¬Ì«Âé·³
+
+
+	for (index = 0; index < linksSection.size(); index++) {
+		pstrTmp = linksSection[index];
+		retval = (int)pstrTmp->find(strTmp);
+		if (retval >= 0) {
+			break;
+		}
+	}
+	if (index >= linksSection.size()) {
+		return -1;
+	}
+	else
+		return (int)index;
+}
+
+string CCfgFileParms::getDeviceID()
+{
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	return deviceID;
+}
+
+
+string CCfgFileParms::getLayer()
+{
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	return layer;
+}
+
+
+string CCfgFileParms::getEntity()
+{
+	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
+	return entityID;
 }

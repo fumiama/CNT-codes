@@ -10,6 +10,7 @@ int send_to_dst_and_wait(U8* dst, U8* data, int len);
 void set_local_addr(int addr);
 void flood(U8* frame_body, int* len, int exclude);
 void broadcast(U8* buf, int* len, int is_notificaton);
+void hello(U8* buf, int* len);
 int is_broadcast_frame(U8* frame_body);
 int is_notification(U8* frame_body);
 void on_recv_notification(U8* frame_body, int len, int ifNo);
@@ -19,4 +20,5 @@ void decrease_ttl(U8* frame_body);
 int get_ttl(U8* frame_body);
 int send_from_me(U8* frame_body);
 int send_to_me(U8* frame_body);
+int is_hello_package(U8* frame_body);
 #endif
