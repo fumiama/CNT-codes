@@ -21,14 +21,14 @@
 #   PHY1
 #   PHY2 LNK1
 #   PHY3
-1 PHY0 LNK0 NET0 APP0
+1 PHY0 LNK0 NET0
    PHY1
-2 PHY0 LNK0 NET0 APP0
+2 PHY0 LNK0 NET0
    PHY1
    PHY2
-3 PHY0 LNK0 NET0 APP0
+3 PHY0 LNK0 NET0
    PHY1
-4 PHY0 LNK0 NET0 APP0
+4 PHY0 LNK0 NET0
    PHY1
    PHY2
 ---------------------------------------------------------
@@ -66,21 +66,7 @@ deviceID = 1
 			lowerMode0 = 0
 			lowerMode1 = 0
 #			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
-	layer = NET
-		entityID = 0
-			myAddr = 1
-#			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
-			lowerMode0 = 0
-#			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 1
-#			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
-			lowerMode0 = 1
-#			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
+		-----------------------------	
 ----------------------------------------------------------
 deviceID = 2
 	layer = PHY
@@ -104,20 +90,6 @@ deviceID = 2
 			lowerMode1 = 0
 			lowerMode2 = 0
 		------------------------------
-	layer = NET
-		entityID = 0
-			myAddr = 2
-#			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
-			lowerMode0 = 0
-#			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 2
-#			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
-			lowerMode0 = 1
-#			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
 ----------------------------------------------------------
 deviceID = 3
 	layer = PHY
@@ -136,20 +108,6 @@ deviceID = 3
 			lowerMode0 = 0
 			lowerMode1 = 0
 		------------------------------
-		layer = NET
-		entityID = 0
-			myAddr = 3
-#			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
-			lowerMode0 = 0
-#			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 3
-#			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
-			lowerMode0 = 1
-#			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
 ----------------------------------------------------------
 deviceID = 4
 	layer = PHY
@@ -173,17 +131,3 @@ deviceID = 4
 			lowerMode1 = 0
 			lowerMode2 = 0
 		------------------------------
-	layer = NET
-		entityID = 0
-			myAddr = 4
-#			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
-			lowerMode0 = 0
-#			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------
-	layer = APP
-		entityID = 0
-			myAddr = 4
-#			myAddr是个自定义参数，例子没有用，建议可作为类似MAC来使用
-			lowerMode0 = 1
-#			这个值要与关联的那个物理层实体的upperMode一致
-		-----------------------------

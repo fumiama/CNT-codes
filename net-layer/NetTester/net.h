@@ -51,5 +51,7 @@ void register_hello();
 //设置本节点ip
 void set_ip(uint8_t ip);
 
+void send_to(uint8_t ip, char* buf, int len);
+
 void auto_send();
 #endif // _NET_H_

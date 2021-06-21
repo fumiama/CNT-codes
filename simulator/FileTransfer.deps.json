@@ -1,0 +1,28 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "FileTransfer/1.0.0": {
+        "runtime": {
+          "FileTransfer.dll": {}
+        },
+        "resources": {
+          "agq/FileTransfer.resources.dll": {
+            "locale": "agq"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FileTransfer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

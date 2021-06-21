@@ -1,0 +1,897 @@
+﻿<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="buttonSendPause.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="buttonSendPause.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="buttonSendPause.Location" type="System.Drawing.Point, System.Drawing">
+    <value>551, 223</value>
+  </data>
+  <data name="buttonSendPause.Size" type="System.Drawing.Size, System.Drawing">
+    <value>150, 46</value>
+  </data>
+  <data name="buttonSendPause.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <data name="buttonSendPause.Text" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="&gt;&gt;buttonSendPause.Name" xml:space="preserve">
+    <value>buttonSendPause</value>
+  </data>
+  <data name="&gt;&gt;buttonSendPause.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonSendPause.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;buttonSendPause.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="buttonSendAction.Location" type="System.Drawing.Point, System.Drawing">
+    <value>365, 223</value>
+  </data>
+  <data name="buttonSendAction.Size" type="System.Drawing.Size, System.Drawing">
+    <value>150, 46</value>
+  </data>
+  <data name="buttonSendAction.TabIndex" type="System.Int32, mscorlib">
+    <value>16</value>
+  </data>
+  <data name="buttonSendAction.Text" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="&gt;&gt;buttonSendAction.Name" xml:space="preserve">
+    <value>buttonSendAction</value>
+  </data>
+  <data name="&gt;&gt;buttonSendAction.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonSendAction.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;buttonSendAction.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="progressBarSend.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 142</value>
+  </data>
+  <data name="progressBarSend.Size" type="System.Drawing.Size, System.Drawing">
+    <value>487, 46</value>
+  </data>
+  <data name="progressBarSend.TabIndex" type="System.Int32, mscorlib">
+    <value>15</value>
+  </data>
+  <data name="&gt;&gt;progressBarSend.Name" xml:space="preserve">
+    <value>progressBarSend</value>
+  </data>
+  <data name="&gt;&gt;progressBarSend.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ProgressBar, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;progressBarSend.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;progressBarSend.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="labelSendProgress.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelSendProgress.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelSendProgress.Location" type="System.Drawing.Point, System.Drawing">
+    <value>44, 149</value>
+  </data>
+  <data name="labelSendProgress.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 31</value>
+  </data>
+  <data name="labelSendProgress.TabIndex" type="System.Int32, mscorlib">
+    <value>14</value>
+  </data>
+  <data name="labelSendProgress.Text" xml:space="preserve">
+    <value>发送进度</value>
+  </data>
+  <data name="&gt;&gt;labelSendProgress.Name" xml:space="preserve">
+    <value>labelSendProgress</value>
+  </data>
+  <data name="&gt;&gt;labelSendProgress.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelSendProgress.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;labelSendProgress.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="buttonPickSend.Location" type="System.Drawing.Point, System.Drawing">
+    <value>650, 57</value>
+  </data>
+  <data name="buttonPickSend.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 46</value>
+  </data>
+  <data name="buttonPickSend.TabIndex" type="System.Int32, mscorlib">
+    <value>13</value>
+  </data>
+  <data name="buttonPickSend.Text" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="&gt;&gt;buttonPickSend.Name" xml:space="preserve">
+    <value>buttonPickSend</value>
+  </data>
+  <data name="&gt;&gt;buttonPickSend.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonPickSend.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;buttonPickSend.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="textBoxPickSend.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 62</value>
+  </data>
+  <data name="textBoxPickSend.Size" type="System.Drawing.Size, System.Drawing">
+    <value>404, 38</value>
+  </data>
+  <data name="textBoxPickSend.TabIndex" type="System.Int32, mscorlib">
+    <value>12</value>
+  </data>
+  <data name="textBoxPickSend.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;textBoxPickSend.Name" xml:space="preserve">
+    <value>textBoxPickSend</value>
+  </data>
+  <data name="&gt;&gt;textBoxPickSend.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxPickSend.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;textBoxPickSend.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="labelPickSend.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelPickSend.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelPickSend.Location" type="System.Drawing.Point, System.Drawing">
+    <value>44, 65</value>
+  </data>
+  <data name="labelPickSend.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 31</value>
+  </data>
+  <data name="labelPickSend.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="labelPickSend.Text" xml:space="preserve">
+    <value>选择文件</value>
+  </data>
+  <data name="&gt;&gt;labelPickSend.Name" xml:space="preserve">
+    <value>labelPickSend</value>
+  </data>
+  <data name="&gt;&gt;labelPickSend.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelPickSend.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;labelPickSend.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="textBoxSendACK.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="textBoxSendACK.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 228</value>
+  </data>
+  <data name="textBoxSendACK.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 38</value>
+  </data>
+  <data name="textBoxSendACK.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="textBoxSendACK.Text" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="textBoxSendACK.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;textBoxSendACK.Name" xml:space="preserve">
+    <value>textBoxSendACK</value>
+  </data>
+  <data name="&gt;&gt;textBoxSendACK.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxSendACK.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;textBoxSendACK.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="labelSendACK.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelSendACK.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelSendACK.Location" type="System.Drawing.Point, System.Drawing">
+    <value>44, 231</value>
+  </data>
+  <data name="labelSendACK.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 31</value>
+  </data>
+  <data name="labelSendACK.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="labelSendACK.Text" xml:space="preserve">
+    <value>等待接收</value>
+  </data>
+  <data name="&gt;&gt;labelSendACK.Name" xml:space="preserve">
+    <value>labelSendACK</value>
+  </data>
+  <data name="&gt;&gt;labelSendACK.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelSendACK.Parent" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;labelSendACK.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="groupSend.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 12</value>
+  </data>
+  <data name="groupSend.Size" type="System.Drawing.Size, System.Drawing">
+    <value>776, 309</value>
+  </data>
+  <data name="groupSend.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="groupSend.Text" xml:space="preserve">
+    <value>发送</value>
+  </data>
+  <data name="&gt;&gt;groupSend.Name" xml:space="preserve">
+    <value>groupSend</value>
+  </data>
+  <data name="&gt;&gt;groupSend.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;groupSend.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;groupSend.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="buttonRecvPause.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="buttonRecvPause.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="buttonRecvPause.Location" type="System.Drawing.Point, System.Drawing">
+    <value>551, 222</value>
+  </data>
+  <data name="buttonRecvPause.Size" type="System.Drawing.Size, System.Drawing">
+    <value>150, 46</value>
+  </data>
+  <data name="buttonRecvPause.TabIndex" type="System.Int32, mscorlib">
+    <value>24</value>
+  </data>
+  <data name="buttonRecvPause.Text" xml:space="preserve">
+    <value>暂停</value>
+  </data>
+  <data name="&gt;&gt;buttonRecvPause.Name" xml:space="preserve">
+    <value>buttonRecvPause</value>
+  </data>
+  <data name="&gt;&gt;buttonRecvPause.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonRecvPause.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;buttonRecvPause.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="textBoxRecvNotice.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="textBoxRecvNotice.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 225</value>
+  </data>
+  <data name="textBoxRecvNotice.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 38</value>
+  </data>
+  <data name="textBoxRecvNotice.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="textBoxRecvNotice.Text" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="textBoxRecvNotice.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;textBoxRecvNotice.Name" xml:space="preserve">
+    <value>textBoxRecvNotice</value>
+  </data>
+  <data name="&gt;&gt;textBoxRecvNotice.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxRecvNotice.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;textBoxRecvNotice.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="buttonRecvAction.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="buttonRecvAction.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="buttonRecvAction.Location" type="System.Drawing.Point, System.Drawing">
+    <value>365, 222</value>
+  </data>
+  <data name="buttonRecvAction.Size" type="System.Drawing.Size, System.Drawing">
+    <value>150, 46</value>
+  </data>
+  <data name="buttonRecvAction.TabIndex" type="System.Int32, mscorlib">
+    <value>23</value>
+  </data>
+  <data name="buttonRecvAction.Text" xml:space="preserve">
+    <value>接收</value>
+  </data>
+  <data name="&gt;&gt;buttonRecvAction.Name" xml:space="preserve">
+    <value>buttonRecvAction</value>
+  </data>
+  <data name="&gt;&gt;buttonRecvAction.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonRecvAction.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;buttonRecvAction.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="labelRecvNotice.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelRecvNotice.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelRecvNotice.Location" type="System.Drawing.Point, System.Drawing">
+    <value>44, 228</value>
+  </data>
+  <data name="labelRecvNotice.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 31</value>
+  </data>
+  <data name="labelRecvNotice.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="labelRecvNotice.Text" xml:space="preserve">
+    <value>收到文件</value>
+  </data>
+  <data name="&gt;&gt;labelRecvNotice.Name" xml:space="preserve">
+    <value>labelRecvNotice</value>
+  </data>
+  <data name="&gt;&gt;labelRecvNotice.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelRecvNotice.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;labelRecvNotice.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="progressBarRecv.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="progressBarRecv.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 141</value>
+  </data>
+  <data name="progressBarRecv.Size" type="System.Drawing.Size, System.Drawing">
+    <value>487, 46</value>
+  </data>
+  <data name="progressBarRecv.TabIndex" type="System.Int32, mscorlib">
+    <value>22</value>
+  </data>
+  <data name="&gt;&gt;progressBarRecv.Name" xml:space="preserve">
+    <value>progressBarRecv</value>
+  </data>
+  <data name="&gt;&gt;progressBarRecv.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ProgressBar, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;progressBarRecv.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;progressBarRecv.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="textBoxPickRecv.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 61</value>
+  </data>
+  <data name="textBoxPickRecv.Size" type="System.Drawing.Size, System.Drawing">
+    <value>404, 38</value>
+  </data>
+  <data name="textBoxPickRecv.TabIndex" type="System.Int32, mscorlib">
+    <value>19</value>
+  </data>
+  <data name="textBoxPickRecv.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;textBoxPickRecv.Name" xml:space="preserve">
+    <value>textBoxPickRecv</value>
+  </data>
+  <data name="&gt;&gt;textBoxPickRecv.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxPickRecv.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;textBoxPickRecv.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="labelRecv.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelRecv.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelRecv.Location" type="System.Drawing.Point, System.Drawing">
+    <value>44, 148</value>
+  </data>
+  <data name="labelRecv.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 31</value>
+  </data>
+  <data name="labelRecv.TabIndex" type="System.Int32, mscorlib">
+    <value>21</value>
+  </data>
+  <data name="labelRecv.Text" xml:space="preserve">
+    <value>接收进度</value>
+  </data>
+  <data name="&gt;&gt;labelRecv.Name" xml:space="preserve">
+    <value>labelRecv</value>
+  </data>
+  <data name="&gt;&gt;labelRecv.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelRecv.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;labelRecv.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="labelPickRecv.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelPickRecv.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelPickRecv.Location" type="System.Drawing.Point, System.Drawing">
+    <value>44, 64</value>
+  </data>
+  <data name="labelPickRecv.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 31</value>
+  </data>
+  <data name="labelPickRecv.TabIndex" type="System.Int32, mscorlib">
+    <value>18</value>
+  </data>
+  <data name="labelPickRecv.Text" xml:space="preserve">
+    <value>接收位置</value>
+  </data>
+  <data name="&gt;&gt;labelPickRecv.Name" xml:space="preserve">
+    <value>labelPickRecv</value>
+  </data>
+  <data name="&gt;&gt;labelPickRecv.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelPickRecv.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;labelPickRecv.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="buttonPickRecv.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="buttonPickRecv.Location" type="System.Drawing.Point, System.Drawing">
+    <value>650, 56</value>
+  </data>
+  <data name="buttonPickRecv.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 46</value>
+  </data>
+  <data name="buttonPickRecv.TabIndex" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="buttonPickRecv.Text" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="&gt;&gt;buttonPickRecv.Name" xml:space="preserve">
+    <value>buttonPickRecv</value>
+  </data>
+  <data name="&gt;&gt;buttonPickRecv.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;buttonPickRecv.Parent" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;buttonPickRecv.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="groupRecv.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 356</value>
+  </data>
+  <data name="groupRecv.Size" type="System.Drawing.Size, System.Drawing">
+    <value>776, 309</value>
+  </data>
+  <data name="groupRecv.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="groupRecv.Text" xml:space="preserve">
+    <value>接收</value>
+  </data>
+  <data name="&gt;&gt;groupRecv.Name" xml:space="preserve">
+    <value>groupRecv</value>
+  </data>
+  <data name="&gt;&gt;groupRecv.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;groupRecv.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;groupRecv.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="textBoxSending.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="textBoxSending.Location" type="System.Drawing.Point, System.Drawing">
+    <value>601, 144</value>
+  </data>
+  <data name="textBoxSending.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 38</value>
+  </data>
+  <data name="textBoxSending.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="textBoxSending.Text" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="textBoxSending.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;textBoxSending.Name" xml:space="preserve">
+    <value>textBoxSending</value>
+  </data>
+  <data name="&gt;&gt;textBoxSending.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxSending.Parent" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;textBoxSending.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="textBoxPeerIP.Location" type="System.Drawing.Point, System.Drawing">
+    <value>601, 62</value>
+  </data>
+  <data name="textBoxPeerIP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 38</value>
+  </data>
+  <data name="textBoxPeerIP.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="textBoxPeerIP.Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="textBoxPeerIP.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;textBoxPeerIP.Name" xml:space="preserve">
+    <value>textBoxPeerIP</value>
+  </data>
+  <data name="&gt;&gt;textBoxPeerIP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxPeerIP.Parent" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;textBoxPeerIP.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="textBoxRecving.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="textBoxRecving.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 144</value>
+  </data>
+  <data name="textBoxRecving.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 38</value>
+  </data>
+  <data name="textBoxRecving.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="textBoxRecving.Text" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="textBoxRecving.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;textBoxRecving.Name" xml:space="preserve">
+    <value>textBoxRecving</value>
+  </data>
+  <data name="&gt;&gt;textBoxRecving.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxRecving.Parent" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;textBoxRecving.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="textBoxMyIP.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="textBoxMyIP.Location" type="System.Drawing.Point, System.Drawing">
+    <value>214, 62</value>
+  </data>
+  <data name="textBoxMyIP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 38</value>
+  </data>
+  <data name="textBoxMyIP.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="textBoxMyIP.Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="textBoxMyIP.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
+  <data name="&gt;&gt;textBoxMyIP.Name" xml:space="preserve">
+    <value>textBoxMyIP</value>
+  </data>
+  <data name="&gt;&gt;textBoxMyIP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;textBoxMyIP.Parent" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;textBoxMyIP.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="labelSending.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelSending.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelSending.Location" type="System.Drawing.Point, System.Drawing">
+    <value>431, 147</value>
+  </data>
+  <data name="labelSending.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 31</value>
+  </data>
+  <data name="labelSending.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="labelSending.Text" xml:space="preserve">
+    <value>正在发送</value>
+  </data>
+  <data name="&gt;&gt;labelSending.Name" xml:space="preserve">
+    <value>labelSending</value>
+  </data>
+  <data name="&gt;&gt;labelSending.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelSending.Parent" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;labelSending.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="labelPeerIP.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelPeerIP.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelPeerIP.Location" type="System.Drawing.Point, System.Drawing">
+    <value>431, 65</value>
+  </data>
+  <data name="labelPeerIP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>84, 31</value>
+  </data>
+  <data name="labelPeerIP.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="labelPeerIP.Text" xml:space="preserve">
+    <value>对方IP</value>
+  </data>
+  <data name="&gt;&gt;labelPeerIP.Name" xml:space="preserve">
+    <value>labelPeerIP</value>
+  </data>
+  <data name="&gt;&gt;labelPeerIP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelPeerIP.Parent" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;labelPeerIP.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="labelRecving.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelRecving.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelRecving.Location" type="System.Drawing.Point, System.Drawing">
+    <value>44, 147</value>
+  </data>
+  <data name="labelRecving.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 31</value>
+  </data>
+  <data name="labelRecving.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="labelRecving.Text" xml:space="preserve">
+    <value>正在接收</value>
+  </data>
+  <data name="&gt;&gt;labelRecving.Name" xml:space="preserve">
+    <value>labelRecving</value>
+  </data>
+  <data name="&gt;&gt;labelRecving.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelRecving.Parent" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;labelRecving.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="labelIP.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelIP.Location" type="System.Drawing.Point, System.Drawing">
+    <value>44, 65</value>
+  </data>
+  <data name="labelIP.Size" type="System.Drawing.Size, System.Drawing">
+    <value>84, 31</value>
+  </data>
+  <data name="labelIP.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="labelIP.Text" xml:space="preserve">
+    <value>我的IP</value>
+  </data>
+  <data name="&gt;&gt;labelIP.Name" xml:space="preserve">
+    <value>labelIP</value>
+  </data>
+  <data name="&gt;&gt;labelIP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelIP.Parent" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;labelIP.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="groupInfo.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 711</value>
+  </data>
+  <data name="groupInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>776, 222</value>
+  </data>
+  <data name="groupInfo.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="groupInfo.Text" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="&gt;&gt;groupInfo.Name" xml:space="preserve">
+    <value>groupInfo</value>
+  </data>
+  <data name="&gt;&gt;groupInfo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;groupInfo.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;groupInfo.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>635</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>14, 31</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>800, 975</value>
+  </data>
+  <data name="$this.MaximumSize" type="System.Drawing.Size, System.Drawing">
+    <value>826, 1046</value>
+  </data>
+  <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
+    <value>826, 1046</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>文件传输测试</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>FormMain</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>

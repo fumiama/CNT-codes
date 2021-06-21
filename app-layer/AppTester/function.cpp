@@ -6,7 +6,7 @@
 #include <process.h>
 #include "CfgFileParms.h"
 #include "function.h"
-#include "net.h"
+#include "app.h"
 
 using namespace std;
 
@@ -52,7 +52,7 @@ static void check_key() {
 //输出：
 void InitFunction() {
 	_beginthread((_beginthread_proc_type)check_key, 0, NULL);
-	register_hello();
+	init_app_window();
 }
 
 //***************重要函数提醒******************************
@@ -91,27 +91,7 @@ void TimeOut() {
 //输出：
 void RecvfromUpper(U8* buf, int len)
 {
-	int iSndRetval = len;
-	//发送
-	send_to(*buf, (char*)buf, len);
-	//sendto(sock, sendbuf, iSndRetval, 0, (sockaddr*) & (lower_addr[0]), sizeof(sockaddr_in));
-	if (iSndRetval <= 0) {
-		iSndErrorCount++;
-	}
-	else {
-		iSndTotal += iSndRetval;
-		iSndTotalCount++;
-	}
-	//printf("\n收到上层数据 %d 位，发送到接口0\n", retval * 8);
-	switch (iWorkMode % 10) {
-	case 1:
-		//打印收发数据
-		printf("\n共发送: %d 位, %d 次,转发 %d 位，%d 次;递交 %d 位，%d 次，发送错误 %d 次__________________________\n", iSndTotal, iSndTotalCount, iRcvForward, iRcvForwardCount, iRcvToUpper, iRcvToUpperCount, iSndErrorCount);
-		print_data_bit(buf, len, 1);
-		break;
-	case 0:
-		break;
-	}
+	//APP层没有高层
 }
 //***************重要函数提醒******************************
 //名称：RecvfromLower
@@ -124,32 +104,22 @@ void RecvfromUpper(U8* buf, int len)
 //输入：U8 * buf,低层递交上来的数据， int len，数据长度，单位字节，int ifNo ，低层实体号码，用来区分是哪个低层
 //输出：
 void RecvfromLower(U8* buf, int len, int ifNo) {
-	int iSndRetval = 0;
-	//如果接口0是比特数组格式，先转换成字节数组，再向上递交
-	iSndRetval = BitArrayToByteArray(buf, len, sendbuf, MAX_BUFFER_SIZE);
-	printf("从LNK层收到%d比特/%d字节数据\n", len, iSndRetval);
-	char* data = unpack((PACKAGE*)sendbuf, &iSndRetval);
-	//是发给自己的包
-	if (data) {
-		iSndRetval = SendtoUpper((U8*)data, iSndRetval);
-		printf("向高层递交数据包%10s...\n", data);
-		//iSndRetval = sendto(sock, sendbuf, iSndRetval, 0, (sockaddr*) & (upper_addr), sizeof(sockaddr_in));
-		if (iSndRetval <= 0) {
-			iSndErrorCount++;
-		}
-		else {
-			iRcvToUpper += iSndRetval;
-			iRcvToUpperCount++;
-		}
-	}
-	//打印
-	switch (iWorkMode % 10) {
-	case 1:
-		//打印收发数据
-		printf("\n共发送: %d 位, %d 次,转发 %d 位，%d 次;递交 %d 位，%d 次，发送错误 %d 次__________________________\n", iSndTotal, iSndTotalCount, iRcvForward, iRcvForwardCount, iRcvToUpper, iRcvToUpperCount, iSndErrorCount);
-		print_data_bit(buf, len, lowerMode[ifNo]);
+	TCP* t = (TCP*)buf;
+	switch (t->type)
+	{
+	case DATA:
+		recv_buf(t->data, t->len);
 		break;
-	case 0:
+	case ACK_DAT:
+		release_wait();
+		break;
+	case ACK_SEND:
+		ack_send();
+		break;
+	case ACT_RECV:
+		action_recv(t->src);
+		break;
+	default:
 		break;
 	}
 }
@@ -192,7 +162,6 @@ void menu() {
 		break;
 	case 1:
 		iWorkMode = 10 + iWorkMode % 10;
-		_beginthread((_beginthread_proc_type)auto_send, 0, NULL);
 		break;
 	case 2:
 		iWorkMode = iWorkMode % 10;

@@ -140,6 +140,12 @@ void set_ip(uint8_t ip) {
 	local_addr_src = ip;
 }
 
+void send_to(uint8_t ip, char* buf, int len) {
+	PACKAGE* p = pack(buf, &len, local_addr_src, ip, DATA);
+	SendtoLower((U8*)p, len, 0);
+	free(p);
+}
+
 void auto_send() {
 	uint32_t c;
 	printf("输入欲发送到的ip: ");
@@ -148,9 +154,7 @@ void auto_send() {
 		char* buf = (char*)"data test";		//模拟从高层来的数据
 		int len = 10;
 		printf("[%u]模拟发送数据\n", time(NULL));
-		PACKAGE* p = pack(buf, &len, local_addr_src, (uint8_t)c, DATA);
-		SendtoLower((U8*)p, len, 0);
-		free(p);
+		send_to((uint8_t)c, buf, len);
 		Sleep(8000);
 	}
 }

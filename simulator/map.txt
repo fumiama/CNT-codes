@@ -1,4 +1,4 @@
 PHY = 物理层模拟软件.exe
-APP = apptester.exe
+APP = AppTester.exe
 NET = NetTester.exe
 LNK = LnkTester.exe
